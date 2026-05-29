@@ -1,0 +1,17 @@
+---
+interface Props {
+  href: string;
+  text?: string;
+}
+
+const { href, text = "立即购买" } = Astro.props;
+---
+
+<a 
+  href={href} 
+  target="_blank" 
+  rel="noopener noreferrer"
+  class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition"
+>
+  {text}
+</a>
