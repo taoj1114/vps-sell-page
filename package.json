@@ -20,6 +20,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
     "gray-matter": "^4.0.3",
+    "wrangler": "^4.95.0",
     "zod": "^4.4.3"
   }
 }
