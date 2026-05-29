@@ -6,18 +6,20 @@
 /
 ├── src/
 │   ├── components/       # 可复用 UI 组件
-│   │   └── ui/           # 基础 UI (Navbar, Footer 等)
 │   ├── content/          # Content Collections 数据源
-│   │   └── vps/          # VPS 评测 Markdown 文件
-│   ├── layouts/          # 页面布局模板 (Layout.astro)
-│   ├── pages/            # Astro 页面路由
-│   │   └── vps/          # 详情页路由 ([slug].astro)
-│   └── styles/           # 全局样式 (global.css, Tailwind)
-├── content.config.ts     # 数据集合 Schema 定义 (Zod)
-├── astro.config.mjs      # Astro 配置文件
-└── scripts/              # 辅助校验脚本
+│   │   ├── providers/    # 服务商背景资料 (.md)
+│   │   └── plans/        # VPS 套餐详情 (.md)
+│   ├── layouts/          # 页面布局模板
+│   ├── pages/            # 页面路由
+└── scripts/              # 校验脚本
 ```
 
-## 数据规范
-所有新 VPS 评测需遵循 `content.config.ts` 中的 Zod Schema。
-使用 `npx ts-node scripts/validate-vps.ts` 运行校验。
+## AI Agent 开发指南：添加新 VPS 计划
+若要添加新的 VPS 计划，请遵循以下步骤以避免构建错误：
+
+1. **查阅模板**：参考根目录下的 `PLAN_TEMPLATE.md`。
+2. **创建文件**：在 `src/content/plans/` 目录下创建新的 `.md` 文件（请勿在 `src/content/plans/` 内创建模板文件！）。
+3. **设置 Provider**：`provider` 字段必须引用 `src/content/providers/` 中已存在的文件名。
+4. **校验数据**：创建完成后，执行以下命令验证 Schema：
+   `npx ts-node scripts/validate-vps.ts`
+5. **提交变更**：确认校验通过后提交并推送。
