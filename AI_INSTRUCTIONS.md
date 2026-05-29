@@ -46,6 +46,13 @@ When analyzing a promo page, identify the following:
 - **Status**: Identify if "Out of stock" (`sold_out`) or "Buy now" (`active`).
 - **Coupon Code**: (Optional) Search for a specific code needed at checkout.
 
+### D. Affiliate Integration (MANDATORY & HIGH PRIORITY)
+**The most important task is ensuring the User's Affiliate Code is used:**
+1. **Identify**: Find the specific parameter the provider uses (e.g., `aff`, `ref`, `affid`).
+2. **Verify Provider Config**: Ensure the `affiliateParam` and `affiliateValue` (the user's ID) are correctly set in the `provider` Markdown file.
+3. **Automated Stitching**: The system is designed to automatically append the `affiliateValue` to every `affiliateLink` found in the `plan` files. AI must ensure the `provider` field in the `plan` Markdown exactly matches the filename of the corresponding `provider` file.
+4. **No Link Leakage**: Never leave a link in its "raw" state without ensuring it belongs to a provider that has an affiliate ID configured.
+
 ---
 
 ## 3. Data Transformation Rules (Mapping to Project Logic)
@@ -118,5 +125,6 @@ Detailed description of promo rules...
 2. **Proactive Search**: Execute a web search for "{Brand} company profile", "{Brand} refund policy", and "{Brand} speedtest IP".
 3. **Parse Configs**: Extract all product configurations from the promo cards.
 4. **Normalize & Map**: Standardize units and ensure `location` keywords match the project's tagging logic.
-5. **Synthesize Quality Content**: Write the `intro` and `description` in professional Chinese (default) or English.
-6. **Output**: Generate the two Markdown files with full context.
+5. **Affiliate Verification**: Cross-check if the provider exists. If new, create it with the correct `affiliateParam`. If existing, double-check that the `affiliateValue` (User ID) is preserved and NEVER deleted.
+6. **Synthesize Quality Content**: Write the `intro` and `description` in professional Chinese (default) or English.
+7. **Output**: Generate the two Markdown files with full context.
