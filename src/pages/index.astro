@@ -7,22 +7,52 @@ const livePlans = await getCollection('plans', ({ data }) => {
   return new Date(data.expiryDate) > new Date();
 });
 
-const getAnnualEquivalent = (plan) =>
-  plan.data.billingCycle === 'month' ? plan.data.price * 12 : plan.data.price;
+const getPrimaryProduct = (plan) => {
+  const [product] = plan.data.products ?? [];
 
-const getPriceUnit = (plan) => (plan.data.billingCycle === 'month' ? '/mo' : '/yr');
+  if (product) {
+    return product;
+  }
 
-const getPricePrefix = (plan) => (plan.data.currency === 'USD' ? '$' : `${plan.data.currency} `);
+  return {
+    name: plan.data.title,
+    price: plan.data.price ?? 0,
+    currency: plan.data.currency ?? 'USD',
+    cpu: plan.data.cpu ?? 0,
+    memory: plan.data.memory ?? 0,
+    storage: plan.data.storage ?? 0,
+    bandwidth: plan.data.bandwidth ?? '',
+    location: plan.data.location ?? '',
+    routing: plan.data.routing ?? '',
+    billingCycle: plan.data.billingCycle ?? 'year',
+    affiliateLink: plan.data.affiliateLink ?? '#',
+  };
+};
 
-const getPriceLabel = (plan) => `${getPricePrefix(plan)}${plan.data.price}${getPriceUnit(plan)}`;
+const getAnnualEquivalent = (product) =>
+  product.billingCycle === 'month' ? product.price * 12 : product.price;
 
-const plans = livePlans.sort((a, b) => getAnnualEquivalent(a) - getAnnualEquivalent(b));
+const getPriceUnit = (product) => (product.billingCycle === 'month' ? '/mo' : '/yr');
+
+const getPricePrefix = (product) => (product.currency === 'USD' ? '$' : `${product.currency} `);
+
+const getPriceLabel = (product) => `${getPricePrefix(product)}${product.price}${getPriceUnit(product)}`;
+
+const plans = livePlans.sort(
+  (a, b) => getAnnualEquivalent(getPrimaryProduct(a)) - getAnnualEquivalent(getPrimaryProduct(b))
+);
 
 const plansWithProviders = await Promise.all(
-  plans.map(async (plan) => ({
-    plan,
-    provider: await getEntry(plan.data.provider),
-  }))
+  plans.map(async (plan) => {
+    const primaryProduct = getPrimaryProduct(plan);
+
+    return {
+      plan,
+      provider: await getEntry(plan.data.provider),
+      primaryProduct,
+      products: plan.data.products?.length ? plan.data.products : [primaryProduct],
+    };
+  })
 );
 
 const featured = plansWithProviders[0];
@@ -41,15 +71,16 @@ const homepageTags = ['限时折扣', '热门机房', '可直接跳转'];
 const getDealTags = (plan) => {
   const tags = [];
   const title = plan.data.title.toLowerCase();
-  const location = plan.data.location.toLowerCase();
-  const bandwidth = plan.data.bandwidth.toLowerCase();
-  const routing = (plan.data.routing ?? '').toLowerCase();
+  const product = getPrimaryProduct(plan);
+  const location = product.location.toLowerCase();
+  const bandwidth = product.bandwidth.toLowerCase();
+  const routing = (product.routing ?? '').toLowerCase();
 
   if (bandwidth.includes('unlimited') || bandwidth.includes('不限') || bandwidth.includes('无限')) {
     tags.push('无限流量');
   }
 
-  if (plan.data.storage >= 200 || title.includes('nvme') || title.includes('big')) {
+  if (product.storage >= 200 || title.includes('nvme') || title.includes('big')) {
     tags.push('大硬盘');
   }
 
@@ -64,7 +95,7 @@ const getDealTags = (plan) => {
     tags.push('中国优化');
   }
 
-  if (getAnnualEquivalent(plan) <= 10) {
+  if (getAnnualEquivalent(product) <= 10) {
     tags.push('Under $10/yr');
   }
 
@@ -78,7 +109,7 @@ const getDealTags = (plan) => {
 const getRegionTags = (plan) => {
   const tags = [];
   const title = plan.data.title.toLowerCase();
-  const location = plan.data.location.toLowerCase();
+  const location = getPrimaryProduct(plan).location.toLowerCase();
 
   if (location.includes('usa') || location.includes('united states') || location.includes('seattle') || location.includes('dallas') || location.includes('san jose') || location.includes('new york') || title.includes('us')) {
     tags.push('美国 VPS');
@@ -252,7 +283,7 @@ const dealFilters = filterDefs.filter((filter) =>
               </div>
               <div class="rounded-2xl bg-slate-100 p-4 dark:bg-slate-800">
                 <div class="text-xs text-slate-500">From</div>
-                <div class="mt-2 text-2xl font-black">{cheapest ? getPriceLabel(cheapest.plan) : '--'}</div>
+                <div class="mt-2 text-2xl font-black">{cheapest ? getPriceLabel(cheapest.primaryProduct) : '--'}</div>
               </div>
               <div class="rounded-2xl bg-slate-100 p-4 dark:bg-slate-800">
                 <div class="text-xs text-slate-500">Expiring</div>
@@ -296,66 +327,67 @@ const dealFilters = filterDefs.filter((filter) =>
 
     <section id="featured-deal" class="mx-auto max-w-6xl px-6 py-6 md:py-10">
       {featured && (
-        <a
-          href={`/vps/${featured.plan.id}`}
-          class="group relative block overflow-hidden rounded-[2rem] border border-emerald-500/20 bg-slate-950 p-6 text-white shadow-[0_24px_80px_-32px_rgba(16,185,129,0.55)] transition hover:-translate-y-1 hover:border-emerald-400/40"
-        >
-          <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(16,185,129,0.24),_transparent_26%),radial-gradient(circle_at_bottom_left,_rgba(59,130,246,0.18),_transparent_26%)]"></div>
+        <div class="relative overflow-hidden rounded-[2rem] border border-emerald-500/20 bg-white p-6 shadow-[0_24px_80px_-32px_rgba(16,185,129,0.22)] dark:bg-slate-950">
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(16,185,129,0.12),_transparent_26%),radial-gradient(circle_at_bottom_left,_rgba(59,130,246,0.1),_transparent_26%)]"></div>
           <div class="relative grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
             <div class="space-y-4">
-              <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
+              <div class="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
                 Featured promo
               </div>
               <div class="space-y-3">
-                <h2 class="text-3xl font-black leading-tight md:text-4xl">
+                <h2 class="text-3xl font-black leading-tight text-slate-950 dark:text-white md:text-4xl">
                   {featured.plan.data.title}
                 </h2>
-                <p class="max-w-2xl text-base leading-7 text-slate-300">
+                <p class="max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300">
                   {featured.provider.data.description}
                 </p>
               </div>
               <div class="grid gap-3 sm:grid-cols-3">
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <div class="text-xs text-slate-400">Price</div>
-                  <div class="mt-2 text-2xl font-black text-emerald-300">{getPriceLabel(featured.plan)}</div>
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
+                  <div class="text-xs text-slate-500 dark:text-slate-400">Price</div>
+                  <div class="mt-2 text-2xl font-black text-emerald-600 dark:text-emerald-300">{getPriceLabel(featured.primaryProduct)}</div>
                 </div>
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <div class="text-xs text-slate-400">Promo window</div>
-                  <div class="mt-2 text-lg font-bold">{featured.plan.data.expiryDate ? featured.plan.data.expiryDate.toLocaleDateString() : 'Open-ended'}</div>
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
+                  <div class="text-xs text-slate-500 dark:text-slate-400">Promo window</div>
+                  <div class="mt-2 text-lg font-bold text-slate-950 dark:text-white">{featured.plan.data.expiryDate ? featured.plan.data.expiryDate.toLocaleDateString() : 'Open-ended'}</div>
                 </div>
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <div class="text-xs text-slate-400">Location</div>
-                  <div class="mt-2 text-lg font-bold">{featured.plan.data.location}</div>
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
+                  <div class="text-xs text-slate-500 dark:text-slate-400">Location</div>
+                  <div class="mt-2 text-lg font-bold text-slate-950 dark:text-white">{featured.primaryProduct.location}</div>
                 </div>
               </div>
             </div>
 
-            <div class="relative rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+            <div class="relative rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-900">
               <div class="space-y-4">
-                <div class="flex items-center justify-between text-sm text-slate-300">
+                <div class="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
                   <span>Specs</span>
-                  <span class="font-semibold text-emerald-300">Click-through ready</span>
+                  <span class="font-semibold text-emerald-600 dark:text-emerald-300">Click-through ready</span>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                  <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-emerald-200">Hot</span>
-                  <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200">Promo</span>
-                  <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200">Affiliate</span>
+                  <span class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">Hot</span>
+                  <span class="rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">Promo</span>
+                  <span class="rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">Affiliate</span>
                 </div>
-                <div class="space-y-3 text-sm text-slate-200">
-                  <div class="flex justify-between border-b border-white/10 pb-2"><span>CPU</span><span class="font-mono">{featured.plan.data.cpu} vCPU</span></div>
-                  <div class="flex justify-between border-b border-white/10 pb-2"><span>Memory</span><span class="font-mono">{featured.plan.data.memory} MB</span></div>
-                  <div class="flex justify-between border-b border-white/10 pb-2"><span>Storage</span><span class="font-mono">{featured.plan.data.storage} GB</span></div>
-                  <div class="flex justify-between border-b border-white/10 pb-2"><span>Bandwidth</span><span class="font-mono">{featured.plan.data.bandwidth}</span></div>
+                <div class="space-y-3 text-sm text-slate-700 dark:text-slate-200">
+                  <div class="flex justify-between border-b border-slate-200 pb-2 dark:border-slate-800"><span>CPU</span><span class="font-mono">{featured.primaryProduct.cpu} vCPU</span></div>
+                  <div class="flex justify-between border-b border-slate-200 pb-2 dark:border-slate-800"><span>Memory</span><span class="font-mono">{featured.primaryProduct.memory} MB</span></div>
+                  <div class="flex justify-between border-b border-slate-200 pb-2 dark:border-slate-800"><span>Storage</span><span class="font-mono">{featured.primaryProduct.storage} GB</span></div>
+                  <div class="flex justify-between border-b border-slate-200 pb-2 dark:border-slate-800"><span>Bandwidth</span><span class="font-mono">{featured.primaryProduct.bandwidth}</span></div>
                   <div class="flex justify-between"><span>Provider</span><span class="font-semibold">{featured.provider.data.name}</span></div>
                 </div>
-                <div class="mt-5 inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-bold text-white">
-                  View deal details
-                  <span aria-hidden="true">→</span>
+                <div class="mt-5 flex flex-wrap gap-3">
+                  <a href={`/vps/${featured.plan.id}`} class="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">
+                    View details
+                  </a>
+                  <a href={featured.primaryProduct.affiliateLink} target="_blank" rel="noopener noreferrer" class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:border-emerald-500 hover:bg-emerald-500/20 dark:text-emerald-300">
+                    直达优惠
+                  </a>
                 </div>
               </div>
             </div>
           </div>
-        </a>
+        </div>
       )}
     </section>
 
@@ -367,18 +399,21 @@ const dealFilters = filterDefs.filter((filter) =>
         </div>
       </div>
       <div class="flex gap-4 overflow-x-auto pb-2">
-        {plansWithProviders.slice(0, 5).map(({ plan, provider }) => (
-          <a
-            href={`/vps/${plan.id}`}
+        {plansWithProviders.slice(0, 5).map(({ plan, provider, primaryProduct }) => (
+          <article
             data-plan-card
             data-tags={[...getDealTags(plan), ...getRegionTags(plan)].join(' ')}
             class="min-w-[18rem] rounded-[1.5rem] border border-slate-200 bg-white p-4 transition hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_18px_50px_-30px_rgba(15,23,42,0.28)] dark:border-slate-800 dark:bg-slate-900"
           >
             <div class="flex items-center justify-between gap-3">
               <div class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{provider.data.name}</div>
-              <div class="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">{getPriceLabel(plan)}</div>
+              <div class="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">{getPriceLabel(primaryProduct)}</div>
             </div>
-            <h3 class="mt-3 text-lg font-black leading-tight">{plan.data.title}</h3>
+            <h3 class="mt-3 text-lg font-black leading-tight text-slate-950 dark:text-white">
+              <a href={`/vps/${plan.id}`} class="hover:text-emerald-600 dark:hover:text-emerald-300">
+                {plan.data.title}
+              </a>
+            </h3>
             <div class="mt-3 flex flex-wrap gap-2">
               {getDealTags(plan).slice(0, 3).map((tag) => (
                 <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
@@ -386,7 +421,15 @@ const dealFilters = filterDefs.filter((filter) =>
                 </span>
               ))}
             </div>
-          </a>
+            <div class="mt-4 flex gap-2">
+              <a href={`/vps/${plan.id}`} class="flex-1 rounded-full bg-slate-950 px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">
+                详情
+              </a>
+              <a href={primaryProduct.affiliateLink} target="_blank" rel="noopener noreferrer" class="flex-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-center text-xs font-semibold text-emerald-700 transition hover:border-emerald-500 hover:bg-emerald-500/20 dark:text-emerald-300">
+                直达
+              </a>
+            </div>
+          </article>
         ))}
       </div>
     </section>
@@ -400,9 +443,8 @@ const dealFilters = filterDefs.filter((filter) =>
       </div>
 
       <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {plansWithProviders.map(({ plan, provider }) => (
-          <a
-            href={`/vps/${plan.id}`}
+        {plansWithProviders.map(({ plan, provider, primaryProduct }) => (
+          <article
             data-plan-card
             data-tags={[...getDealTags(plan), ...getRegionTags(plan)].join(' ')}
             class="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-5 transition hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_20px_60px_-30px_rgba(15,23,42,0.35)] dark:border-slate-800 dark:bg-slate-900"
@@ -412,15 +454,17 @@ const dealFilters = filterDefs.filter((filter) =>
                 <div class="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300">
                   {provider.data.name}
                 </div>
-                <h3 class="text-xl font-black leading-tight group-hover:text-emerald-500">
-                  {plan.data.title}
+                <h3 class="text-xl font-black leading-tight text-slate-950 group-hover:text-emerald-500 dark:text-white">
+                  <a href={`/vps/${plan.id}`}>
+                    {plan.data.title}
+                  </a>
                 </h3>
                 <div class="flex flex-wrap gap-2">
                   <span class="rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-300">
                     {getDealTags(plan).includes('限时') ? '限时' : '长期'}
                   </span>
                   <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                    {getAnnualEquivalent(plan) <= 10 ? 'Under $10/yr' : '精选推荐'}
+                    {getAnnualEquivalent(primaryProduct) <= 10 ? 'Under $10/yr' : '精选推荐'}
                   </span>
                   {getDealTags(plan).includes('无限流量') && (
                     <span class="rounded-full bg-sky-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700 dark:text-sky-300">
@@ -461,34 +505,41 @@ const dealFilters = filterDefs.filter((filter) =>
               </div>
               <div class="rounded-2xl bg-emerald-500/10 px-3 py-2 text-right">
                 <div class="text-[11px] uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-300">from</div>
-                <div class="text-xl font-black text-emerald-600 dark:text-emerald-300">{getPriceLabel(plan)}</div>
+                <div class="text-xl font-black text-emerald-600 dark:text-emerald-300">{getPriceLabel(primaryProduct)}</div>
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3 text-sm">
               <div class="rounded-2xl bg-slate-50 p-3 dark:bg-slate-950">
                 <div class="text-xs text-slate-500">Compute</div>
-                <div class="mt-1 font-semibold">{plan.data.cpu}C / {plan.data.memory}MB</div>
+                <div class="mt-1 font-semibold">{primaryProduct.cpu}C / {primaryProduct.memory}MB</div>
               </div>
               <div class="rounded-2xl bg-slate-50 p-3 dark:bg-slate-950">
                 <div class="text-xs text-slate-500">Storage</div>
-                <div class="mt-1 font-semibold">{plan.data.storage}GB</div>
+                <div class="mt-1 font-semibold">{primaryProduct.storage}GB</div>
               </div>
               <div class="rounded-2xl bg-slate-50 p-3 dark:bg-slate-950">
                 <div class="text-xs text-slate-500">Bandwidth</div>
-                <div class="mt-1 font-semibold">{plan.data.bandwidth}</div>
+                <div class="mt-1 font-semibold">{primaryProduct.bandwidth}</div>
               </div>
               <div class="rounded-2xl bg-slate-50 p-3 dark:bg-slate-950">
                 <div class="text-xs text-slate-500">Location</div>
-                <div class="mt-1 font-semibold">{plan.data.location}</div>
+                <div class="mt-1 font-semibold">{primaryProduct.location}</div>
               </div>
             </div>
 
-            <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
               <span>{plan.data.expiryDate ? `Ends ${plan.data.expiryDate.toLocaleDateString()}` : 'No expiry'}</span>
-              <span class="font-semibold uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-300">Details</span>
+              <div class="flex gap-2">
+                <a href={`/vps/${plan.id}`} class="rounded-full bg-slate-950 px-3 py-2 font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">
+                  Details
+                </a>
+                <a href={primaryProduct.affiliateLink} target="_blank" rel="noopener noreferrer" class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 font-semibold text-emerald-700 transition hover:border-emerald-500 hover:bg-emerald-500/20 dark:text-emerald-300">
+                  直达
+                </a>
+              </div>
             </div>
-          </a>
+          </article>
         ))}
       </div>
 

@@ -5,8 +5,9 @@ import AffiliateButton from '../../components/AffiliateButton.astro';
 
 export async function getStaticPaths() {
   const plans = await getCollection('plans');
-  return plans.map(plan => ({
-    params: { slug: plan.id }, props: { plan },
+  return plans.map((plan) => ({
+    params: { slug: plan.id },
+    props: { plan },
   }));
 }
 
@@ -14,29 +15,55 @@ const { plan } = Astro.props;
 const provider = await getEntry(plan.data.provider);
 const { Content } = await render(plan);
 
+const getPrimaryProduct = (plan) => {
+  const [product] = plan.data.products ?? [];
+
+  if (product) {
+    return product;
+  }
+
+  return {
+    name: plan.data.title,
+    price: plan.data.price ?? 0,
+    currency: plan.data.currency ?? 'USD',
+    cpu: plan.data.cpu ?? 0,
+    memory: plan.data.memory ?? 0,
+    storage: plan.data.storage ?? 0,
+    bandwidth: plan.data.bandwidth ?? '',
+    location: plan.data.location ?? '',
+    routing: plan.data.routing ?? '',
+    billingCycle: plan.data.billingCycle ?? 'year',
+    affiliateLink: plan.data.affiliateLink ?? '#',
+  };
+};
+
+const getProducts = (plan) => plan.data.products?.length ? plan.data.products : [getPrimaryProduct(plan)];
+
+const getAnnualEquivalent = (product) =>
+  product.billingCycle === 'month' ? product.price * 12 : product.price;
+
+const getPriceUnit = (product) => (product.billingCycle === 'month' ? '/mo' : '/yr');
+
+const getPricePrefix = (product) => (product.currency === 'USD' ? '$' : `${product.currency} `);
+
+const getPriceLabel = (product) => `${getPricePrefix(product)}${product.price}${getPriceUnit(product)}`;
+
+const primaryProduct = getPrimaryProduct(plan);
+const products = getProducts(plan);
 const isExpired = plan.data.expiryDate && new Date(plan.data.expiryDate) < new Date();
-
-const getAnnualEquivalent = (plan) =>
-  plan.data.billingCycle === 'month' ? plan.data.price * 12 : plan.data.price;
-
-const getPriceUnit = (plan) => (plan.data.billingCycle === 'month' ? '/mo' : '/yr');
-
-const getPricePrefix = (plan) => (plan.data.currency === 'USD' ? '$' : `${plan.data.currency} `);
-
-const getPriceLabel = (plan) => `${getPricePrefix(plan)}${plan.data.price}${getPriceUnit(plan)}`;
 
 const getDealTags = (plan) => {
   const tags = [];
   const title = plan.data.title.toLowerCase();
-  const location = plan.data.location.toLowerCase();
-  const bandwidth = plan.data.bandwidth.toLowerCase();
-  const routing = (plan.data.routing ?? '').toLowerCase();
+  const product = getPrimaryProduct(plan);
+  const bandwidth = product.bandwidth.toLowerCase();
+  const routing = (product.routing ?? '').toLowerCase();
 
   if (bandwidth.includes('unlimited') || bandwidth.includes('不限') || bandwidth.includes('无限')) {
     tags.push('无限流量');
   }
 
-  if (plan.data.storage >= 200 || title.includes('nvme') || title.includes('big')) {
+  if (product.storage >= 200 || title.includes('nvme') || title.includes('big')) {
     tags.push('大硬盘');
   }
 
@@ -51,7 +78,7 @@ const getDealTags = (plan) => {
     tags.push('中国优化');
   }
 
-  if (getAnnualEquivalent(plan) <= 10) {
+  if (getAnnualEquivalent(product) <= 10) {
     tags.push('Under $10/yr');
   }
 
@@ -63,10 +90,11 @@ const getDealTags = (plan) => {
 };
 
 const dealTags = getDealTags(plan);
+
 const getRegionTags = (plan) => {
   const tags = [];
   const title = plan.data.title.toLowerCase();
-  const location = plan.data.location.toLowerCase();
+  const location = getPrimaryProduct(plan).location.toLowerCase();
 
   if (location.includes('usa') || location.includes('united states') || location.includes('seattle') || location.includes('dallas') || location.includes('san jose') || location.includes('new york') || title.includes('us')) {
     tags.push('美国 VPS');
@@ -95,6 +123,7 @@ const getRegionTags = (plan) => {
 };
 
 const regionTags = getRegionTags(plan);
+
 const categoryLinks = [
   ...dealTags.includes('无限流量') ? [{ label: '无限流量 VPS', href: '/?filter=无限流量#all-deals' }] : [],
   ...dealTags.includes('大硬盘') ? [{ label: '大硬盘 VPS', href: '/?filter=大硬盘#all-deals' }] : [],
@@ -105,82 +134,206 @@ const categoryLinks = [
   ...regionTags.includes('欧洲 VPS') ? [{ label: '欧洲 VPS', href: '/?filter=欧洲 VPS#all-deals' }] : [],
   ...regionTags.includes('新加坡 VPS') ? [{ label: '新加坡 VPS', href: '/?filter=新加坡 VPS#all-deals' }] : [],
 ];
+
+const providerIntro = provider.data.intro ?? provider.data.description;
+const paymentMethods = provider.data.paymentMethods ?? [];
+const refundPolicy = provider.data.refundPolicy ?? '请以服务商最新条款为准。';
 ---
 
-<Layout title={`${plan.data.title} - ${provider.data.name} 推荐`} description={provider.data.description}>
-  <main class="mx-auto max-w-4xl p-6">
+<Layout title={`${plan.data.title} - ${provider.data.name} 推荐`} description={providerIntro}>
+  <main class="mx-auto max-w-6xl px-6 py-10 md:py-14">
     <div class="mb-6 flex flex-wrap items-center gap-3">
       <a href="/" class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
         &larr; 返回列表
       </a>
-      {categoryLinks.length > 0 && (
-        <>
-          {categoryLinks.map((link) => (
-            <a
-              href={link.href}
-              class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:border-emerald-500 hover:bg-emerald-500/20 dark:text-emerald-300"
-            >
-              返回 {link.label}
-            </a>
-          ))}
-        </>
-      )}
+      {categoryLinks.map((link) => (
+        <a
+          href={link.href}
+          class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:border-emerald-500 hover:bg-emerald-500/20 dark:text-emerald-300"
+        >
+          返回 {link.label}
+        </a>
+      ))}
     </div>
-    
+
     {isExpired && (
-      <div class="bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 p-4 rounded-xl mb-6 font-bold text-center">
+      <div class="mb-6 rounded-[1.25rem] border border-red-200 bg-red-50 p-4 text-center font-bold text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300">
         该优惠活动已于 {plan.data.expiryDate?.toLocaleDateString()} 结束，相关优惠可能已失效。
       </div>
     )}
-    
-    <div class="mb-8 border-b border-slate-200 dark:border-slate-800 pb-8">
-      <h1 class="text-4xl font-bold mb-4">{plan.data.title}</h1>
-      <div class="bg-slate-100 dark:bg-slate-900 p-6 rounded-2xl">
-        <h2 class="text-lg font-bold mb-2 text-emerald-500">{provider.data.name}</h2>
-        <p class="text-slate-600 dark:text-slate-400 mb-4">{provider.data.description}</p>
-        <a href={provider.data.website} target="_blank" rel="noopener noreferrer" class="text-sm text-blue-500 hover:underline">访问服务商官网</a>
-      </div>
-      <div class="mt-4 flex flex-wrap gap-2">
-        {dealTags.map((tag) => (
-          <a
-            href={`/?filter=${tag}#all-deals`}
-            class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
-          >
-            {tag}
-          </a>
-        ))}
-        {regionTags.map((tag) => (
-          <a
-            href={`/?filter=${tag}#all-deals`}
-            class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700 transition hover:border-emerald-500 hover:bg-emerald-500/20 dark:text-emerald-300"
-          >
-            {tag}
-          </a>
-        ))}
-      </div>
-    </div>
-    
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-      <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl">
-        <div class="text-xs text-slate-500">价格</div>
-        <div class="font-bold text-lg">{getPriceLabel(plan)}</div>
-      </div>
-      <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl">
-        <div class="text-xs text-slate-500">CPU</div>
-        <div class="font-bold">{plan.data.cpu} Core</div>
-      </div>
-      <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl">
-        <div class="text-xs text-slate-500">内存</div>
-        <div class="font-bold">{plan.data.memory} MB</div>
-      </div>
-    </div>
 
-    <div class="prose dark:prose-invert max-w-none mb-8">
-      <Content />
-    </div>
+    <section class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+            服务商背景
+          </span>
+          <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300">
+            {provider.data.name}
+          </span>
+        </div>
+        <h1 class="mt-4 text-3xl font-black tracking-tight text-slate-950 dark:text-white md:text-5xl">
+          {plan.data.title}
+        </h1>
+        <p class="mt-4 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300">
+          {providerIntro}
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href={provider.data.website} target="_blank" rel="noopener noreferrer" class="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">
+            访问服务商官网
+          </a>
+          {provider.data.reviewLink && (
+            <a href={provider.data.reviewLink} target="_blank" rel="noopener noreferrer" class="rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-emerald-500 hover:text-emerald-600 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-emerald-400 dark:hover:text-emerald-300">
+              外站测评
+            </a>
+          )}
+        </div>
+        <div class="mt-6 grid gap-3 sm:grid-cols-2">
+          {dealTags.map((tag) => (
+            <a
+              href={`/?filter=${tag}#all-deals`}
+              class="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-center text-xs font-semibold text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
+            >
+              {tag}
+            </a>
+          ))}
+          {regionTags.map((tag) => (
+            <a
+              href={`/?filter=${tag}#all-deals`}
+              class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-center text-xs font-semibold text-emerald-700 transition hover:border-emerald-500 hover:bg-emerald-500/20 dark:text-emerald-300"
+            >
+              {tag}
+            </a>
+          ))}
+        </div>
+      </div>
 
-    <div class="mt-8">
-      <AffiliateButton href={plan.data.affiliateLink} text="立即前往优惠购买" />
-    </div>
+      <div class="rounded-[2rem] border border-slate-200 bg-slate-50 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">优惠名称 / 时间</div>
+        <h2 class="mt-3 text-2xl font-black text-slate-950 dark:text-white">{plan.data.title}</h2>
+        <div class="mt-4 grid gap-3 sm:grid-cols-2">
+          <div class="rounded-2xl bg-white p-4 dark:bg-slate-950">
+            <div class="text-xs text-slate-500 dark:text-slate-400">开始时间</div>
+            <div class="mt-2 text-base font-semibold text-slate-950 dark:text-white">{plan.data.pubDate.toLocaleDateString()}</div>
+          </div>
+          <div class="rounded-2xl bg-white p-4 dark:bg-slate-950">
+            <div class="text-xs text-slate-500 dark:text-slate-400">结束时间</div>
+            <div class="mt-2 text-base font-semibold text-slate-950 dark:text-white">{plan.data.expiryDate ? plan.data.expiryDate.toLocaleDateString() : '长期有效'}</div>
+          </div>
+          <div class="rounded-2xl bg-white p-4 dark:bg-slate-950">
+            <div class="text-xs text-slate-500 dark:text-slate-400">主推价格</div>
+            <div class="mt-2 text-2xl font-black text-emerald-600 dark:text-emerald-300">{getPriceLabel(primaryProduct)}</div>
+          </div>
+          <div class="rounded-2xl bg-white p-4 dark:bg-slate-950">
+            <div class="text-xs text-slate-500 dark:text-slate-400">主推地区</div>
+            <div class="mt-2 text-base font-semibold text-slate-950 dark:text-white">{primaryProduct.location}</div>
+          </div>
+        </div>
+        <div class="mt-6">
+          <AffiliateButton href={primaryProduct.affiliateLink} text="直达主推优惠" />
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">优惠产品</div>
+          <h2 class="mt-2 text-2xl font-black text-slate-950 dark:text-white">可直接购买的套餐列表</h2>
+        </div>
+        <div class="text-sm text-slate-500 dark:text-slate-400">
+          {products.length} 个套餐
+        </div>
+      </div>
+
+      <div class="mt-6 overflow-x-auto">
+        <table class="min-w-full border-separate border-spacing-0">
+          <thead>
+            <tr class="text-left text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+              <th class="border-b border-slate-200 px-4 py-3 dark:border-slate-800">产品</th>
+              <th class="border-b border-slate-200 px-4 py-3 dark:border-slate-800">价格</th>
+              <th class="border-b border-slate-200 px-4 py-3 dark:border-slate-800">配置</th>
+              <th class="border-b border-slate-200 px-4 py-3 dark:border-slate-800">地区</th>
+              <th class="border-b border-slate-200 px-4 py-3 dark:border-slate-800">线路 / 备注</th>
+              <th class="border-b border-slate-200 px-4 py-3 dark:border-slate-800">直达</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product) => (
+              <tr class="align-top text-sm text-slate-700 dark:text-slate-200">
+                <td class="border-b border-slate-100 px-4 py-4 font-semibold dark:border-slate-800">{product.name}</td>
+                <td class="border-b border-slate-100 px-4 py-4 font-black text-emerald-600 dark:border-slate-800 dark:text-emerald-300">{getPriceLabel(product)}</td>
+                <td class="border-b border-slate-100 px-4 py-4 dark:border-slate-800">
+                  <div>{product.cpu} vCPU / {product.memory} MB</div>
+                  <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">{product.storage} GB, {product.bandwidth}</div>
+                </td>
+                <td class="border-b border-slate-100 px-4 py-4 dark:border-slate-800">{product.location}</td>
+                <td class="border-b border-slate-100 px-4 py-4 dark:border-slate-800">
+                  <div>{product.routing || '标准线路'}</div>
+                  {product.note && <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">{product.note}</div>}
+                </td>
+                <td class="border-b border-slate-100 px-4 py-4 dark:border-slate-800">
+                  <a
+                    href={product.affiliateLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex rounded-full bg-slate-950 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
+                  >
+                    直达
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
+      <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">外站测评连接</div>
+        <h2 class="mt-2 text-2xl font-black text-slate-950 dark:text-white">第三方测评 / 参考文章</h2>
+        <p class="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
+          这个区域放独立测评页，方便用户在下单前交叉验证商家口碑、速度和稳定性。
+        </p>
+        {provider.data.reviewLink ? (
+          <a href={provider.data.reviewLink} target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-emerald-500 hover:text-emerald-600 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-emerald-400 dark:hover:text-emerald-300">
+            打开测评连接
+          </a>
+        ) : (
+          <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">当前服务商尚未填写外站测评连接。</p>
+        )}
+      </div>
+
+      <div class="grid gap-6">
+        <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">支付方式</div>
+          <h2 class="mt-2 text-2xl font-black text-slate-950 dark:text-white">商家支持的支付方式</h2>
+          <div class="mt-4 flex flex-wrap gap-2">
+            {paymentMethods.length > 0 ? (
+              paymentMethods.map((method) => (
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                  {method}
+                </span>
+              ))
+            ) : (
+              <span class="text-sm text-slate-500 dark:text-slate-400">未填写</span>
+            )}
+          </div>
+        </div>
+
+        <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">退款政策</div>
+          <h2 class="mt-2 text-2xl font-black text-slate-950 dark:text-white">商家退款政策</h2>
+          <p class="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-300">{refundPolicy}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-8 rounded-[2rem] border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900/70">
+      <div class="prose prose-slate max-w-none dark:prose-invert">
+        <Content />
+      </div>
+    </section>
   </main>
 </Layout>

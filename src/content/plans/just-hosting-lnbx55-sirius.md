@@ -12,6 +12,40 @@ billingCycle: "year"
 affiliateLink: "https://just.hosting"
 pubDate: 2026-05-29
 expiryDate: 2026-06-30
+products:
+  - name: "Sirius Starter"
+    price: 2.11
+    currency: "USD"
+    cpu: 1
+    memory: 1024
+    storage: 20
+    bandwidth: "300 Mbps"
+    location: "Ljubljana"
+    billingCycle: "year"
+    affiliateLink: "https://just.hosting?plan=sirius-starter"
+    note: "LNBX55 优惠码"
+  - name: "Sirius Balanced"
+    price: 4.99
+    currency: "USD"
+    cpu: 2
+    memory: 2048
+    storage: 40
+    bandwidth: "500 Mbps"
+    location: "Seattle"
+    billingCycle: "year"
+    affiliateLink: "https://just.hosting?plan=sirius-balanced"
+    note: "适合中等负载"
+  - name: "Sirius Storage"
+    price: 7.99
+    currency: "USD"
+    cpu: 2
+    memory: 4096
+    storage: 120
+    bandwidth: "1 Gbps"
+    location: "Dallas"
+    billingCycle: "year"
+    affiliateLink: "https://just.hosting?plan=sirius-storage"
+    note: "偏大硬盘"
 ---
 
 这是一个面向推广页风格的测试套餐，参考的是 LowEndBox 上的促销型 VPS 文案。
