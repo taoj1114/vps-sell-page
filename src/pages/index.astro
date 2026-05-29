@@ -1,6 +1,7 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import { appendReferralParam } from '../lib/affiliate';
 
 const livePlans = await getCollection('plans', ({ data }) => {
   if (!data.expiryDate) return true;
@@ -45,13 +46,24 @@ const plans = livePlans.sort(
 
 const plansWithProviders = await Promise.all(
   plans.map(async (plan) => {
-    const primaryProduct = getPrimaryProduct(plan);
+    const rawPrimaryProduct = getPrimaryProduct(plan);
+    const provider = await getEntry(plan.data.provider);
+
+    // Apply affiliate stitching at the data level
+    const stitchedPrimaryProduct = {
+      ...rawPrimaryProduct,
+      affiliateLink: appendReferralParam(
+        rawPrimaryProduct.affiliateLink, 
+        provider.data.affiliateParam, 
+        provider.data.affiliateValue
+      )
+    };
 
     return {
       plan,
-      provider: await getEntry(plan.data.provider),
-      primaryProduct,
-      products: plan.data.products?.length ? plan.data.products : [primaryProduct],
+      provider,
+      primaryProduct: stitchedPrimaryProduct,
+      products: plan.data.products?.length ? plan.data.products : [stitchedPrimaryProduct],
     };
   })
 );
