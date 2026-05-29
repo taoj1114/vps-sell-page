@@ -3,9 +3,15 @@ import path from 'path';
 import matter from 'gray-matter';
 import { z } from 'zod';
 
+const providers = fs.readdirSync(path.join(process.cwd(), 'src/content/providers'))
+  .filter(f => f.endsWith('.md'))
+  .map(f => f.replace('.md', ''));
+
 const VPS_SCHEMA = z.object({
   title: z.string(),
-  description: z.string(),
+  provider: z.string().refine(val => providers.includes(val), {
+    message: `Provider must be one of: ${providers.join(', ')}`
+  }),
   price: z.number(),
   currency: z.string().default('USD'),
   cpu: z.number(),
@@ -13,13 +19,12 @@ const VPS_SCHEMA = z.object({
   storage: z.number(),
   bandwidth: z.string(),
   location: z.string(),
-  tags: z.array(z.string()).optional(),
   affiliateLink: z.string().url(),
-  rating: z.number().min(0).max(5),
   pubDate: z.date().or(z.string().transform((val) => new Date(val))),
+  expiryDate: z.date().or(z.string().transform((val) => new Date(val))).optional(),
 });
 
-const contentDir = path.join(process.cwd(), 'src/content/vps');
+const contentDir = path.join(process.cwd(), 'src/content/plans');
 const files = fs.readdirSync(contentDir);
 
 let hasError = false;
@@ -34,10 +39,10 @@ files.forEach(file => {
   const result = VPS_SCHEMA.safeParse(data);
   
   if (!result.success) {
-    console.error(`Error in ${file}:`, result.error.format());
+    console.error(`❌ Error in ${file}:`, result.error.format());
     hasError = true;
   } else {
-    console.log(`Successfully validated: ${file}`);
+    console.log(`✅ Successfully validated: ${file}`);
   }
 });
 
