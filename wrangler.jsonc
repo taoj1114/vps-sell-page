@@ -7,6 +7,13 @@
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
+	"kv_namespaces": [
+		{
+			"binding": "SESSION",
+			"binding_name": "SESSION",
+			"id": "vps-sell-session"
+		}
+	],
 	"observability": {
 		"enabled": true
 	}
