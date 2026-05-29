@@ -2,7 +2,10 @@
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 
-const allPlans = await getCollection('plans');
+const allPlans = await getCollection('plans', ({ data }) => {
+  if (!data.expiryDate) return true;
+  return new Date(data.expiryDate) > new Date();
+});
 ---
 
 <Layout>

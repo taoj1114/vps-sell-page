@@ -15,7 +15,7 @@ const plans = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/plans' }),
   schema: z.object({
     title: z.string(),
-    provider: reference('providers'), // 关键：引用服务商
+    provider: reference('providers'),
     price: z.number(),
     currency: z.string().default('USD'),
     cpu: z.number(),
@@ -25,6 +25,7 @@ const plans = defineCollection({
     location: z.string(),
     affiliateLink: z.string().url(),
     pubDate: z.date().or(z.string().transform((val) => new Date(val))),
+    expiryDate: z.date().or(z.string().transform((val) => new Date(val))).optional(),
   }),
 });
 

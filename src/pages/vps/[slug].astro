@@ -13,11 +13,19 @@ export async function getStaticPaths() {
 const { plan } = Astro.props;
 const provider = await getEntry(plan.data.provider);
 const { Content } = await render(plan);
+
+const isExpired = plan.data.expiryDate && new Date(plan.data.expiryDate) < new Date();
 ---
 
 <Layout title={`${plan.data.title} - ${provider.data.name} 推荐`} description={provider.data.description}>
   <main class="max-w-4xl mx-auto p-6">
     <a href="/" class="text-emerald-500 hover:underline mb-4 block">&larr; 返回列表</a>
+    
+    {isExpired && (
+      <div class="bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 p-4 rounded-xl mb-6 font-bold text-center">
+        该优惠活动已于 {plan.data.expiryDate?.toLocaleDateString()} 结束，相关优惠可能已失效。
+      </div>
+    )}
     
     <div class="mb-8 border-b border-slate-200 dark:border-slate-800 pb-8">
       <h1 class="text-4xl font-bold mb-4">{plan.data.title}</h1>
