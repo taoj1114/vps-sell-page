@@ -9,9 +9,11 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generate-types": "wrangler types"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^13.6.0",
     "@astrojs/starlight": "^0.39.2",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^6.4.2",
@@ -22,5 +24,8 @@
     "gray-matter": "^4.0.3",
     "wrangler": "^4.95.0",
     "zod": "^4.4.3"
+  },
+  "overrides": {
+    "vite": "^7"
   }
 }
