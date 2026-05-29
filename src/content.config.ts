@@ -1,7 +1,8 @@
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const vpsCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/vps' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -15,7 +16,7 @@ const vpsCollection = defineCollection({
     tags: z.array(z.string()).optional(),
     affiliateLink: z.string().url(),
     rating: z.number().min(0).max(5),
-    pubDate: z.date(),
+    pubDate: z.date().or(z.string().transform((val) => new Date(val))),
   }),
 });
 
