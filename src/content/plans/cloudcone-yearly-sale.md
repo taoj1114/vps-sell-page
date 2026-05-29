@@ -15,7 +15,8 @@ products:
     bandwidth: "3 TB"
     location: "Missouri, USA"
     billingCycle: "year"
-    affiliateLink: "https://app.cloudcone.com/vps/501/create?token=hashtag-26-ssd-vps-2&ref=10000"
+    affiliateLink: "https://app.cloudcone.com/?ref=10000"
+    deployLink: "https://app.cloudcone.com/vps/501/create?token=hashtag-26-ssd-vps-2"
     note: "入门年付档"
   - name: "CloudCone Balanced"
     price: 23.99
@@ -26,7 +27,8 @@ products:
     bandwidth: "4 TB"
     location: "Missouri, USA"
     billingCycle: "year"
-    affiliateLink: "https://app.cloudcone.com/vps/502/create?token=hashtag-26-ssd-vps-3&ref=10000"
+    affiliateLink: "https://app.cloudcone.com/?ref=10000"
+    deployLink: "https://app.cloudcone.com/vps/502/create?token=hashtag-26-ssd-vps-3"
     note: "均衡负载"
   - name: "CloudCone Growth"
     price: 42.99
@@ -37,7 +39,8 @@ products:
     bandwidth: "5 TB"
     location: "Missouri, USA"
     billingCycle: "year"
-    affiliateLink: "https://app.cloudcone.com/vps/503/create?token=hashtag-26-ssd-vps-4&ref=10000"
+    affiliateLink: "https://app.cloudcone.com/?ref=10000"
+    deployLink: "https://app.cloudcone.com/vps/503/create?token=hashtag-26-ssd-vps-4"
     note: "更适合常规业务"
   - name: "CloudCone Pro"
     price: 78.99
@@ -48,7 +51,8 @@ products:
     bandwidth: "6 TB"
     location: "Missouri, USA"
     billingCycle: "year"
-    affiliateLink: "https://app.cloudcone.com/vps/504/create?token=hashtag-26-ssd-vps-5&ref=10000"
+    affiliateLink: "https://app.cloudcone.com/?ref=10000"
+    deployLink: "https://app.cloudcone.com/vps/504/create?token=hashtag-26-ssd-vps-5"
     note: "高配年付档"
 ---
 

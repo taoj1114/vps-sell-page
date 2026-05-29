@@ -2,6 +2,7 @@
 import { getEntry, render } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import AffiliateButton from '../components/AffiliateButton.astro';
+import { buildAffiliateUrl } from '../lib/affiliate';
 
 const provider = await getEntry('providers', 'cloudcone');
 const plan = await getEntry('plans', 'cloudcone-yearly-sale');
@@ -55,7 +56,7 @@ const getPriceLabel = (product) => {
 
         <div class="mt-6 flex flex-wrap gap-3">
           <a
-            href={provider.data.website}
+            href={buildAffiliateUrl(provider.data.website, { fallback: 'https://app.cloudcone.com/?ref=10000' })}
             target="_blank"
             rel="noopener noreferrer"
             class="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
@@ -105,7 +106,7 @@ const getPriceLabel = (product) => {
           </div>
         </div>
         <div class="mt-6">
-          <AffiliateButton href={primaryProduct.affiliateLink} text="直达主推优惠" />
+          <AffiliateButton href={buildAffiliateUrl(primaryProduct.deployLink ?? primaryProduct.affiliateLink, { fallback: primaryProduct.affiliateLink })} text="直达主推优惠" />
         </div>
       </div>
     </section>
@@ -149,7 +150,7 @@ const getPriceLabel = (product) => {
                 </td>
                 <td class="border-b border-slate-100 px-4 py-4 dark:border-slate-800">
                   <a
-                    href={product.affiliateLink}
+                    href={buildAffiliateUrl(product.deployLink ?? product.affiliateLink, { fallback: product.affiliateLink })}
                     target="_blank"
                     rel="noopener noreferrer"
                     class="inline-flex rounded-full bg-slate-950 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"

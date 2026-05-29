@@ -27,6 +27,7 @@ const planProduct = z.object({
   routing: z.string().optional(),
   billingCycle: z.enum(['month', 'year']).default('year'),
   affiliateLink: z.string().url(),
+  deployLink: z.string().url().optional(),
   note: z.string().optional(),
 });
 
