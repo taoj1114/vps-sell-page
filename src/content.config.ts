@@ -1,25 +1,34 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, z, reference } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-const vpsCollection = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/vps' }),
+const providers = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/providers' }),
+  schema: z.object({
+    name: z.string(),
+    website: z.string().url(),
+    logo: z.string().optional(),
+    description: z.string(),
+  }),
+});
+
+const plans = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/plans' }),
   schema: z.object({
     title: z.string(),
-    description: z.string(),
+    provider: reference('providers'), // 关键：引用服务商
     price: z.number(),
     currency: z.string().default('USD'),
     cpu: z.number(),
-    memory: z.number(), // in MB or GB
-    storage: z.number(), // in GB
+    memory: z.number(),
+    storage: z.number(),
     bandwidth: z.string(),
     location: z.string(),
-    tags: z.array(z.string()).optional(),
     affiliateLink: z.string().url(),
-    rating: z.number().min(0).max(5),
     pubDate: z.date().or(z.string().transform((val) => new Date(val))),
   }),
 });
 
 export const collections = {
-  'vps': vpsCollection,
+  providers,
+  plans,
 };

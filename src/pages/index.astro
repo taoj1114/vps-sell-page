@@ -2,65 +2,33 @@
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 
-const allVPS = await getCollection('vps');
+const allPlans = await getCollection('plans');
 ---
 
 <Layout>
   <main class="max-w-6xl mx-auto p-6 md:py-12">
     <div class="mb-12">
-      <h1 class="text-4xl font-extrabold mb-4">精选 VPS 推荐</h1>
-      <p class="text-slate-500 dark:text-slate-400">发现高性能、高性价比的 VPS 方案。</p>
-      
-      <div class="mt-8">
-        <input 
-          type="text" 
-          id="searchInput" 
-          placeholder="搜索 VPS 名称..." 
-          class="w-full md:w-80 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-emerald-500 transition"
-        />
-      </div>
+      <h1 class="text-4xl font-extrabold mb-4">精选 VPS 套餐</h1>
+      <p class="text-slate-500 dark:text-slate-400">为您筛选的优质服务器资源。</p>
     </div>
 
     <div id="vpsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {allVPS.map((vps) => (
-        <a href={`/vps/${vps.id}`} class="vps-card group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl hover:border-emerald-500/50 hover:shadow-xl transition-all" data-title={vps.data.title.toLowerCase()}>
-          <div class="flex justify-between items-start mb-4">
-            <h2 class="text-xl font-bold group-hover:text-emerald-500 transition line-clamp-1">{vps.data.title}</h2>
-            <span class="text-xs font-medium px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">{vps.data.location}</span>
-          </div>
+      {allPlans.map((plan) => (
+        <a href={`/vps/${plan.id}`} class="vps-card group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl hover:border-emerald-500/50 hover:shadow-xl transition-all">
+          <h2 class="text-xl font-bold mb-4 group-hover:text-emerald-500 transition line-clamp-1">{plan.data.title}</h2>
           
-          <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 h-10 line-clamp-2">{vps.data.description}</p>
-          
-          <div class="space-y-3 mb-6">
-            <div class="flex items-center text-sm text-slate-700 dark:text-slate-300">
-               <span class="w-20 text-slate-500">配置:</span>
-               <span class="font-mono">{vps.data.cpu}C / {vps.data.memory >= 1024 ? (vps.data.memory/1024) + 'GB' : vps.data.memory + 'MB'}</span>
-            </div>
-            <div class="flex items-center text-sm text-slate-700 dark:text-slate-300">
-               <span class="w-20 text-slate-500">存储:</span>
-               <span class="font-mono">{vps.data.storage}GB SSD</span>
-            </div>
+          <div class="space-y-2 mb-6 text-sm text-slate-600 dark:text-slate-300">
+             <div class="flex justify-between"><span>配置:</span><span class="font-mono">{plan.data.cpu}C / {plan.data.memory}MB</span></div>
+             <div class="flex justify-between"><span>存储:</span><span class="font-mono">{plan.data.storage}GB</span></div>
+             <div class="flex justify-between"><span>地区:</span><span>{plan.data.location}</span></div>
           </div>
 
           <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800">
-            <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400">${vps.data.price}</span>
-            <span class="text-xs text-slate-400 uppercase tracking-wider font-bold">MO/USD</span>
+            <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400">${plan.data.price}</span>
+            <span class="text-xs text-slate-400 uppercase font-bold">{plan.data.currency}/MO</span>
           </div>
         </a>
       ))}
     </div>
   </main>
-
-  <script>
-    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
-    const vpsCards = document.querySelectorAll('.vps-card');
-
-    searchInput.addEventListener('input', (e) => {
-      const val = (e.target as HTMLInputElement).value.toLowerCase();
-      vpsCards.forEach(card => {
-        const title = card.getAttribute('data-title') || '';
-        (card as HTMLElement).style.display = title.includes(val) ? 'block' : 'none';
-      });
-    });
-  </script>
 </Layout>
