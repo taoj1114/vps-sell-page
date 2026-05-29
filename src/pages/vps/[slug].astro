@@ -15,11 +15,108 @@ const provider = await getEntry(plan.data.provider);
 const { Content } = await render(plan);
 
 const isExpired = plan.data.expiryDate && new Date(plan.data.expiryDate) < new Date();
+
+const getDealTags = (plan) => {
+  const tags = [];
+  const title = plan.data.title.toLowerCase();
+  const location = plan.data.location.toLowerCase();
+  const bandwidth = plan.data.bandwidth.toLowerCase();
+  const routing = (plan.data.routing ?? '').toLowerCase();
+
+  if (bandwidth.includes('unlimited') || bandwidth.includes('不限') || bandwidth.includes('无限')) {
+    tags.push('无限流量');
+  }
+
+  if (plan.data.storage >= 200 || title.includes('nvme') || title.includes('big')) {
+    tags.push('大硬盘');
+  }
+
+  if (
+    routing.includes('cn') ||
+    routing.includes('china') ||
+    routing.includes('premium') ||
+    routing.includes('carrier') ||
+    routing.includes('三网') ||
+    routing.includes('优化')
+  ) {
+    tags.push('中国优化');
+  }
+
+  if (plan.data.price <= 3) {
+    tags.push('低价入门');
+  }
+
+  if (plan.data.expiryDate) {
+    tags.push('限时');
+  }
+
+  return tags;
+};
+
+const dealTags = getDealTags(plan);
+const getRegionTags = (plan) => {
+  const tags = [];
+  const title = plan.data.title.toLowerCase();
+  const location = plan.data.location.toLowerCase();
+
+  if (location.includes('usa') || location.includes('united states') || location.includes('seattle') || location.includes('dallas') || location.includes('san jose') || location.includes('new york') || title.includes('us')) {
+    tags.push('美国 VPS');
+  }
+
+  if (location.includes('japan') || location.includes('tokyo') || location.includes('osaka') || title.includes('jp')) {
+    tags.push('日本 VPS');
+  }
+
+  if (
+    location.includes('europe') ||
+    location.includes('london') ||
+    location.includes('amsterdam') ||
+    location.includes('frankfurt') ||
+    location.includes('paris') ||
+    location.includes('ljubljana')
+  ) {
+    tags.push('欧洲 VPS');
+  }
+
+  if (location.includes('singapore') || title.includes('sg')) {
+    tags.push('新加坡 VPS');
+  }
+
+  return tags;
+};
+
+const regionTags = getRegionTags(plan);
+const categoryLinks = [
+  ...dealTags.includes('无限流量') ? [{ label: '无限流量 VPS', href: '/?filter=无限流量#all-deals' }] : [],
+  ...dealTags.includes('大硬盘') ? [{ label: '大硬盘 VPS', href: '/?filter=大硬盘#all-deals' }] : [],
+  ...dealTags.includes('中国优化') ? [{ label: '中国优化', href: '/?filter=中国优化#all-deals' }] : [],
+  ...dealTags.includes('低价入门') ? [{ label: '低价入门 VPS', href: '/?filter=低价入门#all-deals' }] : [],
+  ...regionTags.includes('美国 VPS') ? [{ label: '美国 VPS', href: '/?filter=美国 VPS#all-deals' }] : [],
+  ...regionTags.includes('日本 VPS') ? [{ label: '日本 VPS', href: '/?filter=日本 VPS#all-deals' }] : [],
+  ...regionTags.includes('欧洲 VPS') ? [{ label: '欧洲 VPS', href: '/?filter=欧洲 VPS#all-deals' }] : [],
+  ...regionTags.includes('新加坡 VPS') ? [{ label: '新加坡 VPS', href: '/?filter=新加坡 VPS#all-deals' }] : [],
+];
 ---
 
 <Layout title={`${plan.data.title} - ${provider.data.name} 推荐`} description={provider.data.description}>
-  <main class="max-w-4xl mx-auto p-6">
-    <a href="/" class="text-emerald-500 hover:underline mb-4 block">&larr; 返回列表</a>
+  <main class="mx-auto max-w-4xl p-6">
+    <div class="mb-6 flex flex-wrap items-center gap-3">
+      <a href="/" class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+        &larr; 返回列表
+      </a>
+      {categoryLinks.length > 0 && (
+        <>
+          {categoryLinks.map((link) => (
+            <a
+              href={link.href}
+              class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:border-emerald-500 hover:bg-emerald-500/20 dark:text-emerald-300"
+            >
+              返回 {link.label}
+            </a>
+          ))}
+        </>
+      )}
+    </div>
     
     {isExpired && (
       <div class="bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 p-4 rounded-xl mb-6 font-bold text-center">
@@ -33,6 +130,24 @@ const isExpired = plan.data.expiryDate && new Date(plan.data.expiryDate) < new D
         <h2 class="text-lg font-bold mb-2 text-emerald-500">{provider.data.name}</h2>
         <p class="text-slate-600 dark:text-slate-400 mb-4">{provider.data.description}</p>
         <a href={provider.data.website} target="_blank" rel="noopener noreferrer" class="text-sm text-blue-500 hover:underline">访问服务商官网</a>
+      </div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        {dealTags.map((tag) => (
+          <a
+            href={`/?filter=${tag}#all-deals`}
+            class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
+          >
+            {tag}
+          </a>
+        ))}
+        {regionTags.map((tag) => (
+          <a
+            href={`/?filter=${tag}#all-deals`}
+            class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700 transition hover:border-emerald-500 hover:bg-emerald-500/20 dark:text-emerald-300"
+          >
+            {tag}
+          </a>
+        ))}
       </div>
     </div>
     
