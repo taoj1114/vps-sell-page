@@ -1,6 +1,17 @@
 ---
 import '../styles/global.css';
 import Navbar from '../components/ui/Navbar.astro';
+import Footer from '../components/ui/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = "VPS Radar - 高性能 VPS 评测推荐", 
+  description = "发现最适合您的高性能 VPS 方案，提供详细的参数对比与评测。" 
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -9,10 +20,17 @@ import Navbar from '../components/ui/Navbar.astro';
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<title>VPS 推荐 - 极速发现</title>
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
 	</head>
-	<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
+	<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
 		<Navbar />
-		<slot />
+		<main class="flex-grow">
+			<slot />
+		</main>
+		<Footer />
 	</body>
 </html>

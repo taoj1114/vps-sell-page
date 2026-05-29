@@ -14,9 +14,9 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 ---
 
-<Layout>
+<Layout title={`${entry.data.title} - VPS Radar 推荐`} description={entry.data.description}>
   <main class="max-w-4xl mx-auto p-6">
-    <a href="/" class="text-blue-500 hover:underline mb-4 block">&larr; 返回列表</a>
+    <a href="/" class="text-emerald-500 hover:underline mb-4 block">&larr; 返回列表</a>
     <h1 class="text-4xl font-bold mb-4">{entry.data.title}</h1>
     
     <!-- 增强版属性网格 -->
