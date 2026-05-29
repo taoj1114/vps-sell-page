@@ -14,7 +14,7 @@
 2. **创建文件**: 在 `src/content/plans/` 中创建新 `.md` 文件，必须引用 `src/content/providers/` 中存在的 `provider` ID。
 3. **数据校验 (关键)**: 务必执行：
    ```bash
-   npx ts-node scripts/validate-vps.ts
+   npm run validate-vps
    ```
 4. **提交变更**: 校验通过后，提交代码并推送。
 
@@ -22,6 +22,7 @@
 - **不可直接使用模板**: 严禁在 `src/content/plans/` 下放置 `TEMPLATE.md` 或其他非 Markdown 数据文件，否则会破坏 Astro 的内容加载流程。
 - **引用完整性**: 所有套餐的 `provider` 字段必须是有效的服务商 ID，否则校验脚本会报错。
 - **静态部署**: 本项目使用 `@astrojs/cloudflare` 进行静态部署，构建产物即为最终部署内容。
+- **运行校验**: `npm run validate-vps` 会通过 Node 原生类型剥离能力执行 `scripts/validate-vps.ts`，不依赖 `ts-node`。
 
 ---
 *开始工作前，建议先阅读此文件，并确认当前项目环境是否正常。*

@@ -21,5 +21,5 @@
 2. **创建文件**：在 `src/content/plans/` 目录下创建新的 `.md` 文件（请勿在 `src/content/plans/` 内创建模板文件！）。
 3. **设置 Provider**：`provider` 字段必须引用 `src/content/providers/` 中已存在的文件名。
 4. **校验数据**：创建完成后，执行以下命令验证 Schema：
-   `npx ts-node scripts/validate-vps.ts`
+   `npm run validate-vps`
 5. **提交变更**：确认校验通过后提交并推送。

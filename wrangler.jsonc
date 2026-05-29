@@ -10,8 +10,7 @@
 	"kv_namespaces": [
 		{
 			"binding": "SESSION",
-			"binding_name": "SESSION",
-			"id": "vps-sell-session"
+			"id": "vps-sell-page-session"
 		}
 	],
 	"observability": {

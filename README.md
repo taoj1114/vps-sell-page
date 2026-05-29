@@ -1,46 +1,44 @@
-# Astro Starter Kit: Basics
+# VPS Sell Page
+
+一个基于 Astro 的静态 VPS 推荐站点。
+
+## 主要功能
+
+- 首页按卡片展示 VPS 套餐
+- 详情页展示服务商信息、套餐参数和 Markdown 正文
+- 通过 content collections 管理 `providers` 和 `plans`
+- 支持过期优惠自动隐藏或提示
+
+## 项目结构
+
+- `src/content/providers/`: 服务商资料
+- `src/content/plans/`: VPS 套餐内容
+- `src/pages/`: 页面路由
+- `src/components/`: 可复用组件
+- `scripts/validate-vps.ts`: 套餐数据校验脚本
+
+## 开发
 
 ```sh
-npm create astro@latest -- --template basics
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 构建
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+```sh
+npm run build
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## 校验套餐数据
 
-## 🧞 Commands
+```sh
+npm run validate-vps
+```
 
-All commands are run from the root of the project, from a terminal:
+## 添加新套餐
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+1. 先在 `src/content/providers/` 中准备对应服务商文件。
+2. 再在 `src/content/plans/` 中新增套餐 Markdown 文件。
+3. 确保 `provider` 字段引用的是已存在的服务商 ID。
+4. 执行 `npm run validate-vps` 检查数据。

@@ -10,6 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "validate-vps": "node --experimental-strip-types scripts/validate-vps.ts",
     "generate-types": "wrangler types"
   },
   "dependencies": {

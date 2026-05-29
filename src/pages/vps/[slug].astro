@@ -32,7 +32,7 @@ const isExpired = plan.data.expiryDate && new Date(plan.data.expiryDate) < new D
       <div class="bg-slate-100 dark:bg-slate-900 p-6 rounded-2xl">
         <h2 class="text-lg font-bold mb-2 text-emerald-500">{provider.data.name}</h2>
         <p class="text-slate-600 dark:text-slate-400 mb-4">{provider.data.description}</p>
-        <a href={provider.data.website} target="_blank" class="text-sm text-blue-500 hover:underline">访问服务商官网</a>
+        <a href={provider.data.website} target="_blank" rel="noopener noreferrer" class="text-sm text-blue-500 hover:underline">访问服务商官网</a>
       </div>
     </div>
     
