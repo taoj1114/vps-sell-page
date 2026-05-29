@@ -1,0 +1,193 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AffiliateButton from '../components/AffiliateButton.astro';
+
+const marketingLink = 'https://app.cloudcone.com/?ref=10000';
+
+const featuredOffer = {
+  badge: 'CloudCone 优惠',
+  title: 'CloudCone 年付 VPS 优惠页',
+  summary: '保留促销页该有的信息层级，但使用和站内一致的浅色卡片、圆角按钮和扫读式结构。',
+  price: '$14.99',
+  term: '/yr',
+  location: 'Missouri, USA',
+  specs: ['2 vCPU', '1 GB RAM', '20 GB SSD', '3 TB/mo'],
+};
+
+const tiers = [
+  {
+    title: 'Starter yearly VPS',
+    price: '$14.99',
+    subtitle: '入门档',
+    specs: ['2 vCPU', '1 GB RAM', '20 GB SSD', '3 TB/mo'],
+  },
+  {
+    title: 'Balanced yearly VPS',
+    price: '$23.50',
+    subtitle: '均衡档',
+    specs: ['3 vCPU', '2 GB RAM', '30 GB SSD', '4 TB/mo'],
+  },
+  {
+    title: 'Growth yearly VPS',
+    price: '$42.00',
+    subtitle: '进阶档',
+    specs: ['6 vCPU', '4 GB RAM', '60 GB SSD', '5 TB/mo'],
+  },
+  {
+    title: 'Pro yearly VPS',
+    price: '$78.00',
+    subtitle: '高配档',
+    specs: ['10 vCPU', '8 GB RAM', '120 GB SSD', '6 TB/mo'],
+  },
+];
+
+const highlights = [
+  '年度优惠',
+  '纯 SSD',
+  '24/7 支持',
+  '联盟跳转',
+];
+---
+
+<Layout title="CloudCone 年付 VPS 优惠页" description="一个与 VPS Radar 保持一致视觉语言的 CloudCone 优惠页。">
+  <main class="relative overflow-hidden">
+    <section class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.16),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.12),_transparent_26%),linear-gradient(180deg,_rgba(248,250,252,1),_rgba(255,255,255,1))] dark:bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.12),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.1),_transparent_26%),linear-gradient(180deg,_rgba(15,23,42,1),_rgba(2,6,23,1))]"></section>
+
+    <section class="mx-auto max-w-6xl px-6 py-12 md:py-16">
+      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+        <div class="space-y-6">
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+              CloudCone 优惠页
+            </span>
+            <span class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+              年付 VPS
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <h1 class="max-w-3xl text-4xl font-black tracking-tight text-slate-950 dark:text-white md:text-6xl">
+              {featuredOffer.title}
+            </h1>
+            <p class="max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
+              {featuredOffer.summary}
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-3">
+            <a
+              href={marketingLink}
+              class="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
+            >
+              查看优惠
+            </a>
+            <a
+              href="#tiers"
+              class="rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-emerald-500 hover:text-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-emerald-400 dark:hover:text-emerald-300"
+            >
+              对比套餐
+            </a>
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {featuredOffer.specs.map((spec) => (
+              <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">配置</div>
+                <div class="mt-2 text-base font-semibold text-slate-950 dark:text-white">{spec}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="grid gap-4 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.28)] dark:border-slate-800 dark:bg-slate-900">
+          <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white dark:bg-white dark:text-slate-950">
+            <div class="text-xs uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">Featured deal</div>
+            <div class="mt-3 flex items-end gap-3">
+              <div class="text-5xl font-black text-emerald-300 dark:text-emerald-600">{featuredOffer.price}</div>
+              <div class="pb-1 text-lg font-semibold text-slate-300 dark:text-slate-600">{featuredOffer.term}</div>
+            </div>
+            <p class="mt-3 text-sm leading-6 text-slate-300 dark:text-slate-600">
+              价格和 CTA 放在一起，适合直接做导购页首屏。
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-950">
+              <div class="text-xs text-slate-500 dark:text-slate-400">Location</div>
+              <div class="mt-2 text-base font-semibold text-slate-950 dark:text-white">{featuredOffer.location}</div>
+            </div>
+            <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-950">
+              <div class="text-xs text-slate-500 dark:text-slate-400">Billing</div>
+              <div class="mt-2 text-base font-semibold text-slate-950 dark:text-white">Yearly</div>
+            </div>
+            {highlights.map((item) => (
+              <div class="rounded-2xl bg-slate-50 p-4 text-sm font-semibold text-slate-700 dark:bg-slate-950 dark:text-slate-200">
+                {item}
+              </div>
+            ))}
+          </div>
+
+          <div class="rounded-[1.5rem] border border-emerald-500/20 bg-emerald-500/10 p-5">
+            <div class="text-xs uppercase tracking-[0.24em] text-emerald-700 dark:text-emerald-300">Primary CTA</div>
+            <div class="mt-2 text-xl font-black text-slate-950 dark:text-white">使用你的营销链接</div>
+            <div class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+              这个按钮会跳转到你提供的 CloudCone 推广地址。
+            </div>
+            <div class="mt-4">
+              <AffiliateButton href={marketingLink} text="打开 CloudCone 优惠" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tiers" class="mx-auto max-w-6xl px-6 py-6 md:py-10">
+      <div class="mb-5 flex items-end justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">套餐层级</h2>
+          <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">保留多档方案，但保持站内相同的卡片节奏。</p>
+        </div>
+        <a href={marketingLink} class="text-sm font-semibold text-emerald-600 hover:text-emerald-500 dark:text-emerald-300 dark:hover:text-emerald-200">
+          直达优惠 →
+        </a>
+      </div>
+
+      <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        {tiers.map((tier) => (
+          <article class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_20px_50px_-28px_rgba(15,23,42,0.24)] dark:border-slate-800 dark:bg-slate-900">
+            <div class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">{tier.subtitle}</div>
+            <h3 class="mt-3 text-lg font-black text-slate-950 dark:text-white">{tier.title}</h3>
+            <div class="mt-3 text-3xl font-black text-emerald-600 dark:text-emerald-300">{tier.price}</div>
+            <div class="mt-4 flex flex-wrap gap-2">
+              {tier.specs.map((spec) => (
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                  {spec}
+                </span>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-6xl px-6 py-6 pb-14 md:py-10 md:pb-20">
+      <div class="grid gap-4 rounded-[2rem] border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900/70 md:grid-cols-3">
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Step 1</div>
+          <h3 class="mt-2 text-lg font-bold text-slate-950 dark:text-white">扫价格和配置</h3>
+          <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">首屏就能看到年付价格、地区和核心配置。</p>
+        </div>
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Step 2</div>
+          <h3 class="mt-2 text-lg font-bold text-slate-950 dark:text-white">对比不同层级</h3>
+          <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">卡片式展示能和站内其他 VPS 优惠页保持一致。</p>
+        </div>
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Step 3</div>
+          <h3 class="mt-2 text-lg font-bold text-slate-950 dark:text-white">跳转营销链接</h3>
+          <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">CTA 和按钮样式与站内其他页面统一，减少视觉跳出。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

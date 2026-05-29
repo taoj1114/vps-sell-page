@@ -8,6 +8,7 @@ memory: 1024
 storage: 20
 bandwidth: "300 Mbps"
 location: "Ljubljana / San Jose / Sao Paulo / Seattle / Dallas"
+billingCycle: "year"
 affiliateLink: "https://just.hosting"
 pubDate: 2026-05-29
 expiryDate: 2026-06-30
@@ -17,7 +18,7 @@ expiryDate: 2026-06-30
 
 ## Why this deal stands out
 
-- 适合做低价入门 VPS 的促销展示
+- 适合做超低预算 VPS 的促销展示
 - 支持多地点切换，方便模拟推广页里的“多机房”卖点
 - 限时折扣、优惠码和月付价格都可以直接映射到你的列表页
 

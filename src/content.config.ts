@@ -24,6 +24,7 @@ const plans = defineCollection({
     bandwidth: z.string(),
     location: z.string(),
     routing: z.string().optional(),
+    billingCycle: z.enum(['month', 'year']).default('year'),
     affiliateLink: z.string().url(),
     pubDate: z.date().or(z.string().transform((val) => new Date(val))),
     expiryDate: z.date().or(z.string().transform((val) => new Date(val))).optional(),

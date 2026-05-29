@@ -7,7 +7,16 @@ const livePlans = await getCollection('plans', ({ data }) => {
   return new Date(data.expiryDate) > new Date();
 });
 
-const plans = livePlans.sort((a, b) => a.data.price - b.data.price);
+const getAnnualEquivalent = (plan) =>
+  plan.data.billingCycle === 'month' ? plan.data.price * 12 : plan.data.price;
+
+const getPriceUnit = (plan) => (plan.data.billingCycle === 'month' ? '/mo' : '/yr');
+
+const getPricePrefix = (plan) => (plan.data.currency === 'USD' ? '$' : `${plan.data.currency} `);
+
+const getPriceLabel = (plan) => `${getPricePrefix(plan)}${plan.data.price}${getPriceUnit(plan)}`;
+
+const plans = livePlans.sort((a, b) => getAnnualEquivalent(a) - getAnnualEquivalent(b));
 
 const plansWithProviders = await Promise.all(
   plans.map(async (plan) => ({
@@ -55,8 +64,8 @@ const getDealTags = (plan) => {
     tags.push('中国优化');
   }
 
-  if (plan.data.price <= 3) {
-    tags.push('低价入门');
+  if (getAnnualEquivalent(plan) <= 10) {
+    tags.push('Under $10/yr');
   }
 
   if (plan.data.expiryDate) {
@@ -147,10 +156,10 @@ const filterDefs = [
     matches: plansWithProviders.filter(({ plan }) => getRegionTags(plan).includes('新加坡 VPS')).length,
   },
   {
-    id: '低价入门',
-    label: '低价入门 VPS',
-    description: '适合捡漏和起步测试。',
-    matches: plansWithProviders.filter(({ plan }) => getDealTags(plan).includes('低价入门')).length,
+    id: 'Under $10/yr',
+    label: 'Under $10/yr',
+    description: 'Annual cost stays under 10 USD.',
+    matches: plansWithProviders.filter(({ plan }) => getDealTags(plan).includes('Under $10/yr')).length,
   },
 ];
 
@@ -159,7 +168,7 @@ const regionFilters = filterDefs.filter((filter) =>
 );
 
 const dealFilters = filterDefs.filter((filter) =>
-  ['无限流量 VPS', '大硬盘 VPS', '中国优化', '低价入门 VPS'].includes(filter.label)
+  ['无限流量 VPS', '大硬盘 VPS', '中国优化', 'Under $10/yr'].includes(filter.label)
 );
 ---
 
@@ -243,7 +252,7 @@ const dealFilters = filterDefs.filter((filter) =>
               </div>
               <div class="rounded-2xl bg-slate-100 p-4 dark:bg-slate-800">
                 <div class="text-xs text-slate-500">From</div>
-                <div class="mt-2 text-2xl font-black">${cheapest ? cheapest.plan.data.price.toFixed(2) : '--'}</div>
+                <div class="mt-2 text-2xl font-black">{cheapest ? getPriceLabel(cheapest.plan) : '--'}</div>
               </div>
               <div class="rounded-2xl bg-slate-100 p-4 dark:bg-slate-800">
                 <div class="text-xs text-slate-500">Expiring</div>
@@ -308,7 +317,7 @@ const dealFilters = filterDefs.filter((filter) =>
               <div class="grid gap-3 sm:grid-cols-3">
                 <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <div class="text-xs text-slate-400">Price</div>
-                  <div class="mt-2 text-2xl font-black text-emerald-300">${featured.plan.data.price} <span class="text-sm text-slate-300">{featured.plan.data.currency}/mo</span></div>
+                  <div class="mt-2 text-2xl font-black text-emerald-300">{getPriceLabel(featured.plan)}</div>
                 </div>
                 <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <div class="text-xs text-slate-400">Promo window</div>
@@ -367,7 +376,7 @@ const dealFilters = filterDefs.filter((filter) =>
           >
             <div class="flex items-center justify-between gap-3">
               <div class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{provider.data.name}</div>
-              <div class="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">${plan.data.price}</div>
+              <div class="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">{getPriceLabel(plan)}</div>
             </div>
             <h3 class="mt-3 text-lg font-black leading-tight">{plan.data.title}</h3>
             <div class="mt-3 flex flex-wrap gap-2">
@@ -411,7 +420,7 @@ const dealFilters = filterDefs.filter((filter) =>
                     {getDealTags(plan).includes('限时') ? '限时' : '长期'}
                   </span>
                   <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                    {plan.data.price <= 3 ? '低价入门' : '精选推荐'}
+                    {getAnnualEquivalent(plan) <= 10 ? 'Under $10/yr' : '精选推荐'}
                   </span>
                   {getDealTags(plan).includes('无限流量') && (
                     <span class="rounded-full bg-sky-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700 dark:text-sky-300">
@@ -452,7 +461,7 @@ const dealFilters = filterDefs.filter((filter) =>
               </div>
               <div class="rounded-2xl bg-emerald-500/10 px-3 py-2 text-right">
                 <div class="text-[11px] uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-300">from</div>
-                <div class="text-xl font-black text-emerald-600 dark:text-emerald-300">${plan.data.price}</div>
+                <div class="text-xl font-black text-emerald-600 dark:text-emerald-300">{getPriceLabel(plan)}</div>
               </div>
             </div>
 

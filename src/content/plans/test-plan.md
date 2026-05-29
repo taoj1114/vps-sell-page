@@ -9,6 +9,7 @@ storage: 50
 bandwidth: "2TB"
 location: "Hong Kong"
 routing: "cn-premium"
+billingCycle: "year"
 affiliateLink: "https://example.com/test-link"
 pubDate: 2026-05-29
 ---

@@ -16,6 +16,15 @@ const { Content } = await render(plan);
 
 const isExpired = plan.data.expiryDate && new Date(plan.data.expiryDate) < new Date();
 
+const getAnnualEquivalent = (plan) =>
+  plan.data.billingCycle === 'month' ? plan.data.price * 12 : plan.data.price;
+
+const getPriceUnit = (plan) => (plan.data.billingCycle === 'month' ? '/mo' : '/yr');
+
+const getPricePrefix = (plan) => (plan.data.currency === 'USD' ? '$' : `${plan.data.currency} `);
+
+const getPriceLabel = (plan) => `${getPricePrefix(plan)}${plan.data.price}${getPriceUnit(plan)}`;
+
 const getDealTags = (plan) => {
   const tags = [];
   const title = plan.data.title.toLowerCase();
@@ -42,8 +51,8 @@ const getDealTags = (plan) => {
     tags.push('中国优化');
   }
 
-  if (plan.data.price <= 3) {
-    tags.push('低价入门');
+  if (getAnnualEquivalent(plan) <= 10) {
+    tags.push('Under $10/yr');
   }
 
   if (plan.data.expiryDate) {
@@ -90,7 +99,7 @@ const categoryLinks = [
   ...dealTags.includes('无限流量') ? [{ label: '无限流量 VPS', href: '/?filter=无限流量#all-deals' }] : [],
   ...dealTags.includes('大硬盘') ? [{ label: '大硬盘 VPS', href: '/?filter=大硬盘#all-deals' }] : [],
   ...dealTags.includes('中国优化') ? [{ label: '中国优化', href: '/?filter=中国优化#all-deals' }] : [],
-  ...dealTags.includes('低价入门') ? [{ label: '低价入门 VPS', href: '/?filter=低价入门#all-deals' }] : [],
+  ...dealTags.includes('Under $10/yr') ? [{ label: 'Under $10/yr', href: '/?filter=Under%20%2410%2Fyr#all-deals' }] : [],
   ...regionTags.includes('美国 VPS') ? [{ label: '美国 VPS', href: '/?filter=美国 VPS#all-deals' }] : [],
   ...regionTags.includes('日本 VPS') ? [{ label: '日本 VPS', href: '/?filter=日本 VPS#all-deals' }] : [],
   ...regionTags.includes('欧洲 VPS') ? [{ label: '欧洲 VPS', href: '/?filter=欧洲 VPS#all-deals' }] : [],
@@ -151,10 +160,10 @@ const categoryLinks = [
       </div>
     </div>
     
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
       <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl">
         <div class="text-xs text-slate-500">价格</div>
-        <div class="font-bold text-lg">${plan.data.price} {plan.data.currency}</div>
+        <div class="font-bold text-lg">{getPriceLabel(plan)}</div>
       </div>
       <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl">
         <div class="text-xs text-slate-500">CPU</div>

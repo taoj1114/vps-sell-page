@@ -8,6 +8,7 @@ memory: 1024
 storage: 25
 bandwidth: "1TB"
 location: "USA"
+billingCycle: "year"
 affiliateLink: "https://example.com/vps-link"
 pubDate: 2026-05-29
 ---
