@@ -35,6 +35,7 @@ const VPS_SCHEMA = z.object({
     billingCycle: z.enum(['month', 'year']).default('year'),
     affiliateLink: z.string().url(),
     deployLink: z.string().url().optional(),
+    status: z.enum(['active', 'sold_out']).default('active'),
     note: z.string().optional(),
   })).optional(),
   pubDate: z.date().or(z.string().transform((val) => new Date(val))),

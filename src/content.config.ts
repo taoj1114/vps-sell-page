@@ -12,6 +12,10 @@ const providers = defineCollection({
     reviewLink: z.string().url().optional(),
     paymentMethods: z.array(z.string()).default([]),
     refundPolicy: z.string().optional(),
+    affiliateParam: z.string().default('ref'),
+    affiliateValue: z.string().optional(),
+    testIP: z.string().optional(),
+    testFile: z.string().url().optional(),
   }),
 });
 
@@ -28,7 +32,9 @@ const planProduct = z.object({
   billingCycle: z.enum(['month', 'year']).default('year'),
   affiliateLink: z.string().url(),
   deployLink: z.string().url().optional(),
+  status: z.enum(['active', 'sold_out']).default('active'),
   note: z.string().optional(),
+  couponCode: z.string().optional(),
 });
 
 const plans = defineCollection({
