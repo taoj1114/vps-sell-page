@@ -13,7 +13,7 @@ products:
     location: "USA, Los Angeles (DC9)"
     routing: "CN2 GIA"
     billingCycle: "year"
-    affiliateLink: "https://bandwagonhost.com/cart.php?a=add&pid=94"
+    affiliateLink: "https://bandwagonhost.com/cart.php?a=add&pid=87"
     status: "active"
     note: "支持季付 $49.99"
     couponCode: "BWHCGLUKKB"
@@ -27,7 +27,7 @@ products:
     location: "USA, Los Angeles (DC9)"
     routing: "CN2 GIA"
     billingCycle: "year"
-    affiliateLink: "https://bandwagonhost.com/cart.php?a=add&pid=95"
+    affiliateLink: "https://bandwagonhost.com/cart.php?a=add&pid=88"
     status: "active"
     note: "高性能商务首选"
     couponCode: "BWHCGLUKKB"
@@ -41,12 +41,12 @@ products:
     location: "USA, Los Angeles (DC9)"
     routing: "CN2 GIA"
     billingCycle: "year"
-    affiliateLink: "https://bandwagonhost.com/cart.php?a=add&pid=96"
+    affiliateLink: "https://bandwagonhost.com/cart.php?a=add&pid=89"
     status: "active"
     note: "大内存大流量"
     couponCode: "BWHCGLUKKB"
   - name: "CN2 GIA-E 160G"
-    price: 999.99
+    price: 879.99
     currency: "USD"
     cpu: 6
     memory: 8192
@@ -55,7 +55,7 @@ products:
     location: "USA, Los Angeles (DC9)"
     routing: "CN2 GIA"
     billingCycle: "year"
-    affiliateLink: "https://bandwagonhost.com/cart.php?a=add&pid=97"
+    affiliateLink: "https://bandwagonhost.com/cart.php?a=add&pid=90"
     status: "active"
     note: "顶配旗舰配置"
     couponCode: "BWHCGLUKKB"
