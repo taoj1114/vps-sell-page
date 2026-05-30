@@ -122,25 +122,32 @@ const getRegionTags = (plan) => {
   const location = product.location.toLowerCase();
   const note = (product.note ?? '').toLowerCase();
 
-  const check = (keywords) => keywords.some(k => location.includes(k) || title.includes(k) || note.includes(k));
+  const checkWord = (keywords) => keywords.some(k => {
+    // For pure ASCII words, use word boundary to avoid substring false matches (e.g. "la" in "Switzerland")
+    if (/^[a-z0-9_]+$/i.test(k)) {
+      const re = new RegExp(`\\b${k}\\b`, 'i');
+      return re.test(location) || re.test(title) || re.test(note);
+    }
+    return location.includes(k) || title.includes(k) || note.includes(k);
+  });
 
-  if (check(['usa', 'united states', 'seattle', 'dallas', 'san jose', 'new york', 'los angeles', 'la', 'sj', 'us', '美国'])) {
+  if (checkWord(['usa', 'united states', 'seattle', 'dallas', 'san jose', 'new york', 'los angeles', 'la', 'sj', 'us', '美国'])) {
     tags.push('美国 VPS');
   }
 
-  if (check(['japan', 'tokyo', 'osaka', 'jp', '日本'])) {
+  if (checkWord(['japan', 'tokyo', 'osaka', 'jp', '日本'])) {
     tags.push('日本 VPS');
   }
 
-  if (check(['europe', 'london', 'amsterdam', 'frankfurt', 'paris', 'ljubljana', 'uk', 'de', 'nl', 'fr', '欧洲'])) {
+  if (checkWord(['europe', 'london', 'amsterdam', 'frankfurt', 'paris', 'ljubljana', 'uk', 'de', 'nl', 'fr', '欧洲'])) {
     tags.push('欧洲 VPS');
   }
 
-  if (check(['singapore', 'sg', '新加坡'])) {
+  if (checkWord(['singapore', 'sg', '新加坡'])) {
     tags.push('新加坡 VPS');
   }
 
-  if (check(['hong kong', 'hk', '香港'])) {
+  if (checkWord(['hong kong', 'hk', '香港'])) {
     tags.push('香港 VPS');
   }
 
