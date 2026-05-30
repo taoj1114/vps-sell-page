@@ -239,7 +239,20 @@ const dealFilters = filterDefs.filter((filter) =>
 ---
 
 <Layout>
-  <main class="relative overflow-hidden">
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "VPS雷达",
+    "url": "https://vps-radar.pages.dev/",
+    "description": "发现最适合您的高性能VPS方案，提供详细的参数对比、价格评测与实时优惠。",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://vps-radar.pages.dev/?filter={search_term}",
+      "query-input": "required name=search_term"
+    }
+  })} />
+
+  <div class="relative overflow-hidden">
     <section class="relative">
       <div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.16),_transparent_28%),linear-gradient(180deg,_rgba(15,23,42,0.02),_transparent_50%)]"></div>
       <div class="mx-auto max-w-6xl px-6 py-12 md:py-16">
@@ -317,7 +330,7 @@ const dealFilters = filterDefs.filter((filter) =>
                 {filter.matches} matches
               </div>
             </div>
-            <h3 class="mt-4 text-xl font-black leading-tight">{filter.label}</h3>
+            <h2 class="mt-4 text-xl font-black leading-tight">{filter.label}</h2>
             <p class="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">{filter.description}</p>
           </button>
         ))}
@@ -430,7 +443,7 @@ const dealFilters = filterDefs.filter((filter) =>
                 <a 
                   href={primaryProduct.status === 'sold_out' ? '#' : primaryProduct.affiliateLink} 
                   target={primaryProduct.status === 'sold_out' ? '_self' : '_blank'}
-                  rel="noopener noreferrer" 
+                  rel="noopener noreferrer sponsored" 
                   class={`rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 font-semibold text-emerald-700 transition ${primaryProduct.status === 'sold_out' ? 'opacity-50 cursor-not-allowed' : 'hover:border-emerald-500 hover:bg-emerald-500/20 dark:text-emerald-300'}`}
                 >
                   {primaryProduct.status === 'sold_out' ? '售罄' : '直达'}
@@ -445,7 +458,7 @@ const dealFilters = filterDefs.filter((filter) =>
         当前筛选条件下没有匹配的 VPS。
       </div>
     </section>
-  </main>
+  </div>
 
   <script is:inline>
     const countEl = document.querySelector('[data-filter-count]');

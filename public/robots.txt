@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://vps-radar.pages.dev/sitemap-index.xml
