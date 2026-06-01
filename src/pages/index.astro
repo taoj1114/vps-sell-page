@@ -252,13 +252,68 @@ const dealFilters = filterDefs.filter((filter) =>
     }
   })} />
 
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "哪些VPS提供商提供无限流量？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "VPS雷达收录了多家提供无限流量VPS的提供商，包括RackNerd、BandwagonHost等。这些方案适合流量站、下载和高吞吐场景。您可以通过页面上的【无限流量 VPS】筛选按钮快速查看所有无限流量方案。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "有没有针对中国线路优化的VPS？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "有的。VPS雷达专门整理了中国优化线路的VPS方案，包括CN2 GIA、9929、4837等优质线路。这些VPS适合对回国链路和稳定性敏感的用户，您可以在页面上点击【中国优化】筛选查看。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "10美元以下有哪些便宜的VPS推荐？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "VPS雷达收录了多款年付10美元以下的VPS方案，主要来自RackNerd、BandwagonHost等提供商。这些VPS通常提供1核CPU、512MB-1GB内存、10-20GB SSD存储，适合个人博客、学习测试等轻量级用途。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "日本VPS和美国VPS哪个更适合亚洲用户？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "对于亚洲用户，日本VPS通常延迟更低（东京机房到中国大陆约50-80ms），适合面向东亚用户的网站和应用。美国VPS价格更便宜，但延迟较高（约150-200ms），适合对延迟要求不高的通用场景。VPS雷达同时收录了两类方案，您可以根据需求筛选。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "VPS雷达推荐的VPS提供商有哪些？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "VPS雷达目前收录了RackNerd、BandwagonHost（搬瓦工）、Cloudcone等知名VPS提供商的限时优惠和长期方案。所有方案都经过人工审核，确保配置真实、价格透明。"
+        }
+      }
+    ]
+  })} />
+
   <div class="relative overflow-hidden">
-    <section class="relative">
+    <section class="relative" aria-labelledby="hero-heading">
       <div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.16),_transparent_28%),linear-gradient(180deg,_rgba(15,23,42,0.02),_transparent_50%)]"></div>
       <div class="mx-auto max-w-6xl px-6 py-12 md:py-16">
         <div class="grid gap-8 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
           <div class="space-y-6">
-            <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <div class="space-y-4">
+              <h1 id="hero-heading" class="max-w-3xl text-4xl font-black tracking-tight text-slate-950 dark:text-white md:text-6xl">
+                2024年最适合中国用户的VPS推荐：便宜、稳定、线路优化
+              </h1>
+              <p class="max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-300">
+                VPS雷达整理了<mark class="bg-emerald-100 px-1 dark:bg-emerald-900/50">RackNerd、BandwagonHost、Cloudcone</mark>等主流提供商的限时优惠和长期方案，涵盖<mark class="bg-sky-100 px-1 dark:bg-sky-900/50">美国、日本、欧洲、新加坡</mark>等多地区节点，价格从<mark class="bg-amber-100 px-1 dark:bg-amber-900/50">$10/年</mark>起。所有方案均经过人工审核，配置真实可查。
+              </p>
+            </div>
+            <nav aria-label="按地区筛选VPS" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
               {regionFilters.map((filter) => (
                 <button
                   type="button"
@@ -275,44 +330,38 @@ const dealFilters = filterDefs.filter((filter) =>
                   </div>
                 </button>
               ))}
-            </div>
-            <div class="space-y-4">
-              <h1 class="max-w-3xl text-4xl font-black tracking-tight text-slate-950 dark:text-white md:text-6xl">
-                把限时 VPS 优惠，整理成一页能直接下单的推荐站
-              </h1>
-            </div>
+            </nav>
           </div>
 
-          <div class="grid gap-4 rounded-3xl border border-slate-200/70 bg-white/80 p-5 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.35)] backdrop-blur dark:border-slate-800 dark:bg-slate-900/70">
-            <div
-              class="rounded-2xl border border-amber-300/40 bg-amber-50 p-4 text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200"
-              data-countdown-panel
-              data-countdown-expiry={countdownTarget?.toISOString() ?? ''}
-            >
-              <div class="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700 dark:text-amber-300">Countdown</div>
-              <div class="mt-2 text-2xl font-black" data-countdown>{countdownTarget ? 'Loading countdown...' : 'No expiring deals'}</div>
-            </div>
-            <div class="grid grid-cols-3 gap-3">
+          <aside class="grid gap-4 rounded-3xl border border-slate-200/70 bg-white/80 p-5 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.35)] backdrop-blur dark:border-slate-800 dark:bg-slate-900/70" aria-label="当前优惠概览">
+            <div class="grid grid-cols-2 gap-3">
               <div class="rounded-2xl bg-slate-100 p-4 dark:bg-slate-800">
-                <div class="text-xs text-slate-500">Live deals</div>
+                <div class="text-xs text-slate-500">当前方案数</div>
                 <div class="mt-2 text-2xl font-black">{plansWithProviders.length}</div>
               </div>
               <div class="rounded-2xl bg-slate-100 p-4 dark:bg-slate-800">
-                <div class="text-xs text-slate-500">From</div>
+                <div class="text-xs text-slate-500">最低价</div>
                 <div class="mt-2 text-2xl font-black">{cheapest ? getPriceLabel(cheapest.primaryProduct) : '--'}</div>
               </div>
-              <div class="rounded-2xl bg-slate-100 p-4 dark:bg-slate-800">
-                <div class="text-xs text-slate-500">Expiring</div>
-                <div class="mt-2 text-2xl font-black">{expiringSoon.length}</div>
-              </div>
             </div>
-          </div>
+            {countdownTarget && (
+              <div
+                class="rounded-2xl border border-amber-300/40 bg-amber-50 p-4 text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200"
+                data-countdown-panel
+                data-countdown-expiry={countdownTarget.toISOString()}
+              >
+                <div class="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700 dark:text-amber-300">限时优惠倒计时</div>
+                <div class="mt-2 text-2xl font-black" data-countdown>计算中...</div>
+              </div>
+            )}
+          </aside>
         </div>
       </div>
     </section>
 
-    <section class="mx-auto max-w-6xl px-6 py-6 md:py-10">
+    <section class="mx-auto max-w-6xl px-6 py-6 md:py-10" aria-labelledby="category-heading">
       <div class="mb-5 flex items-end justify-between gap-4">
+        <h2 id="category-heading" class="text-2xl font-black text-slate-950 dark:text-white">按需求筛选VPS方案</h2>
         <div class="text-sm font-semibold text-slate-500 dark:text-slate-400">
           当前显示 <span data-filter-count>{plansWithProviders.length}</span> 个结果
         </div>
@@ -325,47 +374,49 @@ const dealFilters = filterDefs.filter((filter) =>
             class="rounded-[1.75rem] border border-slate-200 bg-white p-5 text-left transition hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_20px_50px_-28px_rgba(15,23,42,0.28)] dark:border-slate-800 dark:bg-slate-900"
           >
             <div class="flex items-center justify-between gap-3">
-              <div class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Category</div>
+              <div class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">分类</div>
               <div class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                {filter.matches} matches
+                {filter.matches} 个方案
               </div>
             </div>
-            <h2 class="mt-4 text-xl font-black leading-tight">{filter.label}</h2>
+            <h3 class="mt-4 text-xl font-black leading-tight">{filter.label}</h3>
             <p class="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">{filter.description}</p>
           </button>
         ))}
       </div>
     </section>
 
-    <section id="plans-list" class="mx-auto max-w-6xl px-6 py-6 md:py-10">
+    <section id="plans-list" class="mx-auto max-w-6xl px-6 py-6 md:py-10" aria-labelledby="plans-heading">
+      <h2 id="plans-heading" class="sr-only">VPS方案列表</h2>
       <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {plansWithProviders.map(({ plan, provider, primaryProduct }) => (
           <article
             data-plan-card
             data-tags={[...getDealTags(plan), ...getRegionTags(plan)].join('|')}
             class={`group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-5 transition hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_20px_60px_-30px_rgba(15,23,42,0.35)] dark:border-slate-800 dark:bg-slate-900 ${primaryProduct.status === 'sold_out' ? 'opacity-75' : ''}`}
+            aria-labelledby={`plan-${plan.id}`}
           >
-            <div class="mb-4 flex items-start justify-between gap-3">
+            <header class="mb-4 flex items-start justify-between gap-3">
               <div class="space-y-2">
                 <div class="flex items-center gap-2">
                   <div class="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300">
                     {provider.data.name}
                   </div>
                   {primaryProduct.status === 'sold_out' && (
-                    <span class="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-bold uppercase text-slate-600 dark:bg-slate-800 dark:text-slate-400">Sold Out</span>
+                    <span class="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-bold uppercase text-slate-600 dark:bg-slate-800 dark:text-slate-400">售罄</span>
                   )}
                 </div>
-                <h3 class="text-xl font-black leading-tight text-slate-950 group-hover:text-emerald-500 dark:text-white">
+                <h3 id={`plan-${plan.id}`} class="text-xl font-black leading-tight text-slate-950 group-hover:text-emerald-500 dark:text-white">
                   <a href={`/vps/${plan.id}`}>
                     {plan.data.title}
                   </a>
                 </h3>
                 <div class="flex flex-wrap gap-2">
                   <span class="rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-300">
-                    {getDealTags(plan).includes('限时') ? '限时' : '长期'}
+                    {getDealTags(plan).includes('限时') ? '限时优惠' : '长期可用'}
                   </span>
                   <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                    {getAnnualEquivalent(primaryProduct) <= 10 ? 'Under $10/yr' : '精选推荐'}
+                    {getAnnualEquivalent(primaryProduct) <= 10 ? '年付$10以下' : '精选推荐'}
                   </span>
                   {getDealTags(plan).includes('无限流量') && (
                     <span class="rounded-full bg-sky-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700 dark:text-sky-300">
@@ -379,66 +430,66 @@ const dealFilters = filterDefs.filter((filter) =>
                   )}
                   {getDealTags(plan).includes('中国优化') && (
                     <span class="rounded-full bg-rose-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-rose-700 dark:text-rose-300">
-                      中国优化
+                      中国优化线路
                     </span>
                   )}
                   {getRegionTags(plan).includes('美国 VPS') && (
                     <span class="rounded-full bg-sky-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700 dark:text-sky-300">
-                      美国 VPS
+                      美国机房
                     </span>
                   )}
                   {getRegionTags(plan).includes('日本 VPS') && (
                     <span class="rounded-full bg-amber-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">
-                      日本 VPS
+                      日本机房
                     </span>
                   )}
                   {getRegionTags(plan).includes('欧洲 VPS') && (
                     <span class="rounded-full bg-indigo-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-700 dark:text-indigo-300">
-                      欧洲 VPS
+                      欧洲机房
                     </span>
                   )}
                   {getRegionTags(plan).includes('新加坡 VPS') && (
                     <span class="rounded-full bg-cyan-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
-                      新加坡 VPS
+                      新加坡机房
                     </span>
                   )}
                   {getRegionTags(plan).includes('香港 VPS') && (
                     <span class="rounded-full bg-orange-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-orange-700 dark:text-orange-300">
-                      香港 VPS
+                      香港机房
                     </span>
                   )}
                 </div>
               </div>
               <div class="rounded-2xl bg-emerald-500/10 px-3 py-2 text-right">
-                <div class="text-[11px] uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-300">from</div>
+                <div class="text-[11px] uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-300">起价</div>
                 <div class="text-xl font-black text-emerald-600 dark:text-emerald-300">{getPriceLabel(primaryProduct)}</div>
               </div>
-            </div>
+            </header>
 
-            <div class="grid grid-cols-2 gap-3 text-sm">
+            <dl class="grid grid-cols-2 gap-3 text-sm">
               <div class="rounded-2xl bg-slate-50 p-3 dark:bg-slate-950">
-                <div class="text-xs text-slate-500">Compute</div>
-                <div class="mt-1 font-semibold">{primaryProduct.cpu}C / {primaryProduct.memory}MB</div>
+                <dt class="text-xs text-slate-500">处理器/内存</dt>
+                <dd class="mt-1 font-semibold">{primaryProduct.cpu}核 / {primaryProduct.memory}MB</dd>
               </div>
               <div class="rounded-2xl bg-slate-50 p-3 dark:bg-slate-950">
-                <div class="text-xs text-slate-500">Storage</div>
-                <div class="mt-1 font-semibold">{primaryProduct.storage}GB</div>
+                <dt class="text-xs text-slate-500">存储空间</dt>
+                <dd class="mt-1 font-semibold">{primaryProduct.storage}GB</dd>
               </div>
               <div class="rounded-2xl bg-slate-50 p-3 dark:bg-slate-950">
-                <div class="text-xs text-slate-500">Bandwidth</div>
-                <div class="mt-1 font-semibold">{primaryProduct.bandwidth}</div>
+                <dt class="text-xs text-slate-500">流量配额</dt>
+                <dd class="mt-1 font-semibold">{primaryProduct.bandwidth}</dd>
               </div>
               <div class="rounded-2xl bg-slate-50 p-3 dark:bg-slate-950">
-                <div class="text-xs text-slate-500">Location</div>
-                <div class="mt-1 font-semibold">{primaryProduct.location}</div>
+                <dt class="text-xs text-slate-500">机房位置</dt>
+                <dd class="mt-1 font-semibold">{primaryProduct.location}</dd>
               </div>
-            </div>
+            </dl>
 
-            <div class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
-              <span>{plan.data.expiryDate ? `Ends ${plan.data.expiryDate.toLocaleDateString()}` : 'No expiry'}</span>
+            <footer class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+              <span>{plan.data.expiryDate ? `优惠截止 ${plan.data.expiryDate.toLocaleDateString()}` : '长期有效'}</span>
               <div class="flex gap-2">
                 <a href={`/vps/${plan.id}`} class="rounded-full bg-slate-950 px-3 py-2 font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">
-                  Details
+                  查看详情
                 </a>
                 <a 
                   href={primaryProduct.status === 'sold_out' ? '#' : primaryProduct.affiliateLink} 
@@ -446,16 +497,46 @@ const dealFilters = filterDefs.filter((filter) =>
                   rel="noopener noreferrer sponsored" 
                   class={`rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 font-semibold text-emerald-700 transition ${primaryProduct.status === 'sold_out' ? 'opacity-50 cursor-not-allowed' : 'hover:border-emerald-500 hover:bg-emerald-500/20 dark:text-emerald-300'}`}
                 >
-                  {primaryProduct.status === 'sold_out' ? '售罄' : '直达'}
+                  {primaryProduct.status === 'sold_out' ? '已售罄' : '去购买'}
                 </a>
               </div>
-            </div>
+            </footer>
           </article>
         ))}
       </div>
 
       <div data-empty-state class="mt-6 hidden rounded-[1.75rem] border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center text-slate-500 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-400">
-        当前筛选条件下没有匹配的 VPS。
+        当前筛选条件下没有匹配的VPS方案。
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-6xl px-6 py-10 md:py-16" aria-labelledby="faq-heading">
+      <h2 id="faq-heading" class="text-3xl font-black text-slate-950 dark:text-white">常见问题</h2>
+      <div class="mt-8 grid gap-6 md:grid-cols-2">
+        <article class="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+          <h3 class="text-lg font-bold text-slate-950 dark:text-white">哪些VPS提供无限流量？</h3>
+          <p class="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            VPS雷达收录了RackNerd、BandwagonHost等提供无限流量VPS的商家。这些方案适合流量站、下载和高吞吐场景。点击页面上的"无限流量VPS"筛选按钮可快速查看。
+          </p>
+        </article>
+        <article class="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+          <h3 class="text-lg font-bold text-slate-950 dark:text-white">有没有中国线路优化的VPS？</h3>
+          <p class="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            有的。我们整理了CN2 GIA、9929、4837等优质回国线路的VPS方案，适合对延迟和稳定性要求高的用户。点击"中国优化"筛选可查看。
+          </p>
+        </article>
+        <article class="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+          <h3 class="text-lg font-bold text-slate-950 dark:text-white">10美元以下有哪些便宜VPS？</h3>
+          <p class="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            年付10美元以下的VPS主要来自RackNerd和BandwagonHost的促销活动，通常配置为1核CPU、512MB-1GB内存、10-20GB SSD，适合个人博客和学习测试。
+          </p>
+        </article>
+        <article class="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+          <h3 class="text-lg font-bold text-slate-950 dark:text-white">日本VPS和美国VPS怎么选？</h3>
+          <p class="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            亚洲用户选日本VPS延迟更低（约50-80ms），适合面向东亚用户的网站。美国VPS价格更便宜但延迟较高（约150-200ms），适合对延迟要求不高的通用场景。
+          </p>
+        </article>
       </div>
     </section>
   </div>
