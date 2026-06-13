@@ -2,6 +2,7 @@
 import { getCollection, getEntry } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import { appendReferralParam } from '../lib/affiliate';
+import { getDealTags, getRegionTags } from '../lib/tags';
 
 const livePlans = await getCollection('plans', ({ data }) => {
   if (!data.expiryDate) return true;
@@ -77,97 +78,6 @@ const countdownTarget = expiringSoon
     const bExpiry = b.plan.data.expiryDate?.getTime() ?? Number.MAX_SAFE_INTEGER;
     return aExpiry - bExpiry;
   })[0]?.plan.data.expiryDate;
-
-const getDealTags = (plan) => {
-  const tags = [];
-  const title = plan.data.title.toLowerCase();
-  const product = getPrimaryProduct(plan);
-  const bandwidth = product.bandwidth.toLowerCase();
-  const routing = (product.routing ?? '').toLowerCase();
-  const note = (product.note ?? '').toLowerCase();
-
-  const isUnlimited = (str) => {
-    const keywords = ['unlimited', '不限', '无限', 'inf'];
-    return keywords.some(k => {
-      if (/^[a-z0-9_]+$/i.test(k)) {
-        return new RegExp(`\\b${k}\\b`, 'i').test(str);
-      }
-      return str.includes(k);
-    });
-  };
-
-  if (isUnlimited(bandwidth) || isUnlimited(note)) {
-    tags.push('无限流量');
-  }
-
-  // Exclude HostDare from "Big Disk" tag as requested
-  if (product.storage >= 200 && plan.data.provider.id !== 'hostdare') {
-    tags.push('大硬盘');
-  }
-
-  const isChinaOptimized = (str) => {
-    const keywords = ['cn2', '9929', '4837', 'gia', 'china', 'premium', 'carrier', '三网', '优化', '回国'];
-    return keywords.some(k => {
-      if (/^[a-z0-9_]+$/i.test(k)) {
-        return new RegExp(`\\b${k}\\b`, 'i').test(str);
-      }
-      return str.includes(k);
-    });
-  };
-
-  if (isChinaOptimized(routing) || isChinaOptimized(title) || isChinaOptimized(note)) {
-    tags.push('中国优化');
-  }
-
-  if (getAnnualEquivalent(product) <= 10) {
-    tags.push('Under $10/yr');
-  }
-
-  if (plan.data.expiryDate) {
-    tags.push('限时');
-  }
-
-  return tags;
-};
-
-const getRegionTags = (plan) => {
-  const tags = [];
-  const title = plan.data.title.toLowerCase();
-  const product = getPrimaryProduct(plan);
-  const location = product.location.toLowerCase();
-  const note = (product.note ?? '').toLowerCase();
-
-  const checkWord = (keywords) => keywords.some(k => {
-    // For pure ASCII words, use word boundary to avoid substring false matches (e.g. "la" in "Switzerland")
-    if (/^[a-z0-9_]+$/i.test(k)) {
-      const re = new RegExp(`\\b${k}\\b`, 'i');
-      return re.test(location) || re.test(title) || re.test(note);
-    }
-    return location.includes(k) || title.includes(k) || note.includes(k);
-  });
-
-  if (checkWord(['usa', 'united states', 'seattle', 'dallas', 'san jose', 'new york', 'los angeles', 'la', 'sj', 'us', '美国'])) {
-    tags.push('美国 VPS');
-  }
-
-  if (checkWord(['japan', 'tokyo', 'osaka', 'jp', '日本'])) {
-    tags.push('日本 VPS');
-  }
-
-  if (checkWord(['europe', 'london', 'amsterdam', 'frankfurt', 'paris', 'ljubljana', 'uk', 'de', 'nl', 'fr', '欧洲'])) {
-    tags.push('欧洲 VPS');
-  }
-
-  if (checkWord(['singapore', 'sg', '新加坡'])) {
-    tags.push('新加坡 VPS');
-  }
-
-  if (checkWord(['hong kong', 'hk', '香港'])) {
-    tags.push('香港 VPS');
-  }
-
-  return tags;
-};
 
 const filterDefs = [
   {

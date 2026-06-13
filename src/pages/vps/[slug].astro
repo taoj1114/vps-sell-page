@@ -3,6 +3,7 @@ import { getCollection, getEntry, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import AffiliateButton from '../../components/AffiliateButton.astro';
 import { appendReferralParam } from '../../lib/affiliate';
+import { getDealTags, getRegionTags } from '../../lib/tags';
 
 export async function getStaticPaths() {
   const plans = await getCollection('plans');
@@ -64,96 +65,7 @@ const stitchedPrimaryProduct = {
 
 const isExpired = plan.data.expiryDate && new Date(plan.data.expiryDate) < new Date();
 
-const getDealTags = (plan) => {
-  const tags = [];
-  const title = plan.data.title.toLowerCase();
-  const product = getPrimaryProduct(plan);
-  const bandwidth = product.bandwidth.toLowerCase();
-  const routing = (product.routing ?? '').toLowerCase();
-  const note = (product.note ?? '').toLowerCase();
-
-  const isUnlimited = (str) => 
-    str.includes('unlimited') || 
-    str.includes('不限') || 
-    str.includes('无限') || 
-    str.includes('inf');
-
-  if (isUnlimited(bandwidth) || isUnlimited(note)) {
-    tags.push('无限流量');
-  }
-
-  if (product.storage >= 200) {
-    tags.push('大硬盘');
-  }
-
-  const isChinaOptimized = (str) =>
-    str.includes('cn2') ||
-    str.includes('9929') ||
-    str.includes('4837') ||
-    str.includes('gia') ||
-    str.includes('china') ||
-    str.includes('premium') ||
-    str.includes('carrier') ||
-    str.includes('三网') ||
-    str.includes('优化') ||
-    str.includes('回国');
-
-  if (isChinaOptimized(routing) || isChinaOptimized(title) || isChinaOptimized(note)) {
-    tags.push('中国优化');
-  }
-
-  if (getAnnualEquivalent(product) <= 10) {
-    tags.push('Under $10/yr');
-  }
-
-  if (plan.data.expiryDate) {
-    tags.push('限时');
-  }
-
-  return tags;
-};
-
 const dealTags = getDealTags(plan);
-
-const getRegionTags = (plan) => {
-  const tags = [];
-  const title = plan.data.title.toLowerCase();
-  const product = getPrimaryProduct(plan);
-  const location = product.location.toLowerCase();
-  const note = (product.note ?? '').toLowerCase();
-
-  const checkWord = (keywords) => keywords.some(k => {
-    // For pure ASCII words, use word boundary to avoid substring false matches (e.g. "la" in "Switzerland")
-    if (/^[a-z0-9_]+$/i.test(k)) {
-      const re = new RegExp(`\\b${k}\\b`, 'i');
-      return re.test(location) || re.test(title) || re.test(note);
-    }
-    return location.includes(k) || title.includes(k) || note.includes(k);
-  });
-
-  if (checkWord(['usa', 'united states', 'seattle', 'dallas', 'san jose', 'new york', 'los angeles', 'la', 'sj', 'us', '美国'])) {
-    tags.push('美国 VPS');
-  }
-
-  if (checkWord(['japan', 'tokyo', 'osaka', 'jp', '日本'])) {
-    tags.push('日本 VPS');
-  }
-
-  if (checkWord(['europe', 'london', 'amsterdam', 'frankfurt', 'paris', 'ljubljana', 'uk', 'de', 'nl', 'fr', '欧洲'])) {
-    tags.push('欧洲 VPS');
-  }
-
-  if (checkWord(['singapore', 'sg', '新加坡'])) {
-    tags.push('新加坡 VPS');
-  }
-
-  if (checkWord(['hong kong', 'hk', '香港'])) {
-    tags.push('香港 VPS');
-  }
-
-  return tags;
-};
-
 const regionTags = getRegionTags(plan);
 
 const categoryLinks = [
