@@ -1,2 +1,12 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+@theme {
+  --color-primary: #10b981; /* emerald-500 */
+  --color-bg-base: #f8fafc; /* slate-50 */
+  --color-text-base: #0f172a; /* slate-900 */
+  
+  /* Dark mode overrides can be handled by Tailwind's dark selector */
+  --color-bg-dark: #020617; /* slate-950 */
+  --color-text-dark: #f1f5f9; /* slate-100 */
+}
