@@ -82,7 +82,7 @@ const getDealTags = (plan) => {
     tags.push('无限流量');
   }
 
-  if (product.storage >= 200 || title.includes('nvme') || title.includes('big') || note.includes('storage')) {
+  if (product.storage >= 200) {
     tags.push('大硬盘');
   }
 

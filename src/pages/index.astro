@@ -86,31 +86,34 @@ const getDealTags = (plan) => {
   const routing = (product.routing ?? '').toLowerCase();
   const note = (product.note ?? '').toLowerCase();
 
-  const isUnlimited = (str) => 
-    str.includes('unlimited') || 
-    str.includes('不限') || 
-    str.includes('无限') || 
-    str.includes('inf');
+  const isUnlimited = (str) => {
+    const keywords = ['unlimited', '不限', '无限', 'inf'];
+    return keywords.some(k => {
+      if (/^[a-z0-9_]+$/i.test(k)) {
+        return new RegExp(`\\b${k}\\b`, 'i').test(str);
+      }
+      return str.includes(k);
+    });
+  };
 
   if (isUnlimited(bandwidth) || isUnlimited(note)) {
     tags.push('无限流量');
   }
 
-  if (product.storage >= 200 || title.includes('nvme') || title.includes('big') || note.includes('storage')) {
+  // Exclude HostDare from "Big Disk" tag as requested
+  if (product.storage >= 200 && plan.data.provider.id !== 'hostdare') {
     tags.push('大硬盘');
   }
 
-  const isChinaOptimized = (str) =>
-    str.includes('cn2') ||
-    str.includes('9929') ||
-    str.includes('4837') ||
-    str.includes('gia') ||
-    str.includes('china') ||
-    str.includes('premium') ||
-    str.includes('carrier') ||
-    str.includes('三网') ||
-    str.includes('优化') ||
-    str.includes('回国');
+  const isChinaOptimized = (str) => {
+    const keywords = ['cn2', '9929', '4837', 'gia', 'china', 'premium', 'carrier', '三网', '优化', '回国'];
+    return keywords.some(k => {
+      if (/^[a-z0-9_]+$/i.test(k)) {
+        return new RegExp(`\\b${k}\\b`, 'i').test(str);
+      }
+      return str.includes(k);
+    });
+  };
 
   if (isChinaOptimized(routing) || isChinaOptimized(title) || isChinaOptimized(note)) {
     tags.push('中国优化');
